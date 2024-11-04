@@ -1459,6 +1459,7 @@ int color foreground_material_light 0x7f05005b
 int color forest_green_custom 0x7f0502ec
 int color highlighted_text_material_dark 0x7f05005c
 int color highlighted_text_material_light 0x7f05005d
+int color light_green_custom 0x7f0502ed
 int color m3_appbar_overlay_color 0x7f05005e
 int color m3_assist_chip_icon_tint_color 0x7f05005f
 int color m3_assist_chip_stroke_color 0x7f050060
@@ -3464,7 +3465,6 @@ int id progress_circular 0x7f08016a
 int id progress_horizontal 0x7f08016b
 int id radio 0x7f08016c
 int id ratio 0x7f08016d
-int id recently_added 0x7f0801ff
 int id rectangles 0x7f08016e
 int id report_drawn 0x7f08016f
 int id reverseSawtooth 0x7f080170

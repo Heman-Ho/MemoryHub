@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="forest_green_custom">#758755</color>
+    <color name="light_green_custom">#21825C</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -18,8 +19,8 @@
     <string name="title_notifications">Notifications</string>
     <style name="Theme.MemoryHub" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/light_green_custom</item>
+        <item name="colorPrimaryVariant">@color/forest_green_custom</item>
         <item name="colorOnPrimary">@color/white</item>
         
         <item name="colorSecondary">@color/teal_200</item>

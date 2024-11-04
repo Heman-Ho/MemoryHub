@@ -4,7 +4,6 @@ package ca.sfu.memoryhub.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,15 +20,11 @@ public final class FragmentDashboardBinding implements ViewBinding {
   private final ConstraintLayout rootView;
 
   @NonNull
-  public final EditText recentlyAdded;
-
-  @NonNull
   public final TextView textDashboard;
 
   private FragmentDashboardBinding(@NonNull ConstraintLayout rootView,
-      @NonNull EditText recentlyAdded, @NonNull TextView textDashboard) {
+      @NonNull TextView textDashboard) {
     this.rootView = rootView;
-    this.recentlyAdded = recentlyAdded;
     this.textDashboard = textDashboard;
   }
 
@@ -60,20 +55,13 @@ public final class FragmentDashboardBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.recently_added;
-      EditText recentlyAdded = ViewBindings.findChildViewById(rootView, id);
-      if (recentlyAdded == null) {
-        break missingId;
-      }
-
       id = R.id.text_dashboard;
       TextView textDashboard = ViewBindings.findChildViewById(rootView, id);
       if (textDashboard == null) {
         break missingId;
       }
 
-      return new FragmentDashboardBinding((ConstraintLayout) rootView, recentlyAdded,
-          textDashboard);
+      return new FragmentDashboardBinding((ConstraintLayout) rootView, textDashboard);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

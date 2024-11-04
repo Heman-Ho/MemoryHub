@@ -2,6 +2,7 @@ R_DEF: Internal format may change without notice
 local
 color black
 color forest_green_custom
+color light_green_custom
 color purple_200
 color purple_500
 color purple_700
@@ -23,7 +24,6 @@ id nav_view
 id navigation_dashboard
 id navigation_home
 id navigation_notifications
-id recently_added
 id text_dashboard
 id text_home
 id text_notifications
