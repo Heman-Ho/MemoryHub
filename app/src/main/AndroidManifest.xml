@@ -14,24 +14,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.Dark"
         tools:targetApi="31">
+        <!-- Add activities here -->
+        <activity
+            android:name=".MatchGame"
+            android:exported="false" />
+        <activity
+            android:name=".Login"
+            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
+        <activity
+            android:name=".Register"
+            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
+        <activity
+            android:name=".StartPage"
+            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.Material3.Dark.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Add activities here -->
-        <activity android:name=".Login"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
-        <activity android:name=".Register"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
-        <activity android:name=".StartPage"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
 
     </application>
 
