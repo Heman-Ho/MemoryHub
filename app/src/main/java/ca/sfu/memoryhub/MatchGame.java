@@ -1,5 +1,6 @@
 package ca.sfu.memoryhub;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public class MatchGame extends AppCompatActivity {
     int widthOfScreen, heightOfScreen, noOfCardsX = 3, noOfCardsY = 4,
             widthOfCard, heightOfCard, padding;
     Button exitGame;
+    TextView hintText;
     int noOfCards = noOfCardsX * noOfCardsY; //MUST BE EVEN
     int correctCounter = 0;
 
@@ -43,6 +46,9 @@ public class MatchGame extends AppCompatActivity {
 
         //Find ID's
         exitGame = findViewById(R.id.exitMatchGame);
+        hintText = findViewById(R.id.hintTextViewMatch);
+
+        //Exit button
         exitGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,19 +73,22 @@ public class MatchGame extends AppCompatActivity {
         //Create the board
         createBoard(cards);
 
-        //For creating delay
+        //handler used for creating delay
         Handler handler = new Handler();
 
         final int[] numCardsFlipped = {0};
         final int[] previousFlipped = new int[1];
+        boolean[] isInteractionEnabled = {true};
         //Set on click listener for cards
         for(int i = 0; i < noOfCards; i++){
             int finalI = i;
             cards.get(i).getImg().setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("SetTextI18n")
                 @Override
                 public void onClick(View v) {
                     //Game logic
-                    if(! cards.get(finalI).isShowCard()){
+                    if(! cards.get(finalI).isShowCard() && isInteractionEnabled[0]){
+                        isInteractionEnabled[0] = false;
                         //Tapped card is faced down
                         cards.get(finalI).flipImg();
                         numCardsFlipped[0] += 1;
@@ -89,27 +98,29 @@ public class MatchGame extends AppCompatActivity {
                                 cards.get(finalI).setCorrect(true);
                                 cards.get(previousFlipped[0]).setCorrect(true);
                                 correctCounter += 2;
-                                Toast.makeText(MatchGame.this, "Correct!", Toast.LENGTH_SHORT).show();
+                                hintText.setText("Correct!");
+                                isInteractionEnabled[0] = true;
                             }else{
                                 // Cards don't match, flip them back after a short delay
-                                Toast.makeText(MatchGame.this, "Incorrect", Toast.LENGTH_SHORT).show();
+                                hintText.setText("Try Again!");
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         cards.get(finalI).flipImg();
                                         cards.get(previousFlipped[0]).flipImg();
+                                        isInteractionEnabled[0] = true;
                                     }
                                 }, 1000); // Delay in milliseconds (e.g., 1 second)
                             }
                             numCardsFlipped[0] = 0;
-                        }
-                        if(numCardsFlipped[0] == 1){
+                        }else{
                             previousFlipped[0] = finalI;
+                            isInteractionEnabled[0] = true;
                         }
                     }
                     // Check for game completion
                     if(correctCounter >= noOfCards){
-                        Toast.makeText(MatchGame.this, "YOU WIN!", Toast.LENGTH_SHORT).show();
+                        hintText.setText("You Win!");
                     }
                 }
             });

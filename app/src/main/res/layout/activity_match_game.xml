@@ -23,8 +23,17 @@
         android:id="@+id/match_board"
         android:background="#ddd"
         android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
         android:gravity="fill"
-        android:orientation="horizontal"/>
+        android:orientation="horizontal">
+    </GridLayout>
+    <TextView
+        android:id="@+id/hintTextViewMatch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text=""
+        android:layout_marginBottom="16dp"/>
 
 
 
