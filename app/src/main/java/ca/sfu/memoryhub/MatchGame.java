@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,7 +110,7 @@ public class MatchGame extends AppCompatActivity {
                                         cards.get(previousFlipped[0]).flipImg();
                                         isInteractionEnabled[0] = true;
                                     }
-                                }, 1000); // Delay in milliseconds (e.g., 1 second)
+                                }, 1400); // Delay in milliseconds (e.g., 1 second)
                             }
                             numCardsFlipped[0] = 0;
                         }else{

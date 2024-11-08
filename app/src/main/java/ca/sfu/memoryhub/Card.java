@@ -74,11 +74,17 @@ public class Card {
     //Methods
     public void flipImg() {
         if(this.showCard){
-            //If the card is facing up, show the back of the card
+            //If the card is facing up, flip to the back of the card
+            this.img.animate().setDuration(300).rotationYBy(-90f).start();
             this.img.setImageResource(R.drawable.sample_card);
+            img.setRotationY(90f);
+            this.img.animate().setDuration(300).rotationYBy(-90f).start();
         }else{
             //If the back of the card is showing, show the card's image
+            this.img.animate().setDuration(300).rotationYBy(90f).start();
             this.img.setImageResource(this.imgResource);
+            img.setRotationY(-90f);
+            this.img.animate().setDuration(300).rotationYBy(90f).start();
         }
         this.showCard = !this.showCard;
     }
