@@ -20,6 +20,11 @@
             android:theme="@style/Theme.Material3.Dark.NoActionBar"
             android:exported="false" />
         <activity
+            android:name=".Settings"
+            android:theme="@style/Theme.Material3.Dark.NoActionBar"
+            android:exported="false" />
+
+        <activity
             android:name=".Login"
             android:theme="@style/Theme.Material3.Dark.NoActionBar" />
         <activity
@@ -29,16 +34,16 @@
             android:name=".StartPage"
             android:theme="@style/Theme.Material3.Dark.NoActionBar" />
         <activity
-            android:name=".Settings"
-            android:exported="true" />
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Material3.Dark.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
