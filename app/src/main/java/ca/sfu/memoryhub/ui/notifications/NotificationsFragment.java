@@ -54,14 +54,28 @@ public class NotificationsFragment extends Fragment {
 
 
         //Set up firebase access to difficulty setting
+
         db = FirebaseDatabase.getInstance();
+
         String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         reference = db.getReference("Users").child(uid).child("difficulty");
 
         //Setup dropdown menu for difficulty setting
         autoCompleteTextView = binding.autoCompleteText;
         adapterItems = new ArrayAdapter<String>(requireContext(), R.layout.match_dropdown, difficulties);
-        autoCompleteTextView.setAdapter(adapterItems);
+
+        //Set default text to what is stored in firebase
+        reference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                int difficulty = task.getResult().getValue(Integer.class);
+                //set the textview to be saved preference
+                autoCompleteTextView.setText(difficulties[difficulty]);
+                autoCompleteTextView.setAdapter(adapterItems);
+            }
+        });
+
+
+
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
