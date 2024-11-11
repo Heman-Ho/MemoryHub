@@ -22,7 +22,7 @@ public class puzzle extends AppCompatActivity{
     private int numPiecesCorrect = 0;
     final private int totalNumPieces = getPuzzleDim()*getPuzzleDim();
 
-    private ArrayList<Double> coords = new ArrayList<>();
+    private ArrayList<Float> coords = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class puzzle extends AppCompatActivity{
                 int idNum =0;
 
                 for( ImageView piece: piecesToAdd){
-                    double[] sol = {coords.get(idNum), coords.get(idNum+1), 0.0};
+                    double[] sol = {coords.get(idNum), coords.get(idNum+1), 0.0, totalNumPieces};
 //                    ImageView temp = new ImageView(getApplicationContext());
 //                    temp.setImageBitmap(piece);
                     piece.setTag(sol);
@@ -51,6 +51,8 @@ public class puzzle extends AppCompatActivity{
                     layout.addView(piece);
                     idNum+=2;
                 }
+
+                Log.i("AFTER ADDING", "HERE");
             }
         });
 
@@ -62,8 +64,8 @@ public class puzzle extends AppCompatActivity{
         BitmapDrawable imageBitmap = (BitmapDrawable) puzzleImage.getDrawable();
         Bitmap bitmap = imageBitmap.getBitmap();
 
-        int puzzlePieceWidth = bitmap.getWidth()/puzzleDim;
-        int puzzlePieceHeight = bitmap.getHeight()/puzzleDim;
+        float puzzlePieceWidth = (float) bitmap.getWidth() /puzzleDim;
+        float puzzlePieceHeight = (float) bitmap.getHeight() /puzzleDim;
         int y =0;
 
 
@@ -77,21 +79,25 @@ public class puzzle extends AppCompatActivity{
 
         int[] onScreenCoords = new int[2];
         v.getLocationOnScreen(onScreenCoords);
-        Log.i("Location", Arrays.toString(onScreenCoords));
+        Log.i("width", String.valueOf((bitmap.getWidth())));
+        Log.i("height", String.valueOf((bitmap.getHeight())));
         for(int row = 0; row< puzzleDim; row++){
             int x = 0;
             for(int col =0; col<puzzleDim; col++){
 //                PuzzlePiece piece = new PuzzlePiece(getApplicationContext());
-                coords.add((double) (onScreenCoords[0]+ x));
-                coords.add((double)(onScreenCoords[1]+ y));
+                coords.add((float) (onScreenCoords[0]+ x));
+                coords.add((float)(onScreenCoords[1]+ y));
+                Log.i("onScreenCoords", String.valueOf(onScreenCoords[0]+x) + " & " + String.valueOf(onScreenCoords[1]+y));
+
 
                 x+= (int) (puzzlePieceWidth);
             }
             y+= (int) (puzzlePieceHeight);
         }
-        Log.i("COORDS", String.valueOf(puzzlePieceWidth) + " & " + String.valueOf(puzzlePieceHeight));
+        Log.i("PUZZLE DIMENSIONS", String.valueOf(puzzlePieceWidth) + " & " + String.valueOf(puzzlePieceHeight));
         Log.i("COORDS", String.valueOf(coords));
 //        Log.i("COORDS", String.valueOf(coords));
+
     }
 
     protected boolean isPuzzleCompleted(){
@@ -114,7 +120,7 @@ public class puzzle extends AppCompatActivity{
 
         int puzzlePieceWidth = bitmap.getWidth()/puzzleDim;
         int puzzlePieceHeight = bitmap.getHeight()/puzzleDim;
-
+        Log.i("PUZZLE DIMENSIONS", String.valueOf(puzzlePieceWidth) + " & " + String.valueOf(puzzlePieceHeight));
         int y = 0;
         for(int row = 0; row< puzzleDim; row++){
             int x = 0;
