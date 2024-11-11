@@ -6,4 +6,6 @@
     <string name="title_gallery">Gallery</string>
     <string name="title_game">Games</string>
     <string name="exit">exit</string>
+    <string name="select_difficulty">Select Difficulty</string>
+    <string name="matching_game">matching game</string>
 </resources>

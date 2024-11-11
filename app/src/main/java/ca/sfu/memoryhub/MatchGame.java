@@ -9,11 +9,13 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import androidx.activity.EdgeToEdge;
@@ -22,15 +24,22 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseAuth;
+
 
 public class MatchGame extends AppCompatActivity {
 
-    int widthOfScreen, heightOfScreen, noOfCardsX = 3, noOfCardsY = 4,
+
+    int widthOfScreen, heightOfScreen, noOfCardsX = 2, noOfCardsY = 2,
             widthOfCard, heightOfCard, padding;
     Button exitGame;
     TextView hintText;
     int noOfCards = noOfCardsX * noOfCardsY; //MUST BE EVEN
     int correctCounter = 0;
+    FirebaseDatabase db;
+    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +56,37 @@ public class MatchGame extends AppCompatActivity {
         exitGame = findViewById(R.id.exitMatchGame);
         hintText = findViewById(R.id.hintTextViewMatch);
 
+        //Get the current user object from firebase
+        if(FirebaseAuth.getInstance().getCurrentUser()!= null) {
+            String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+            DatabaseReference reference = FirebaseDatabase.getInstance()
+                    .getReference("Users").child(uid).child("difficulty");
+            reference.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    int difficulty = task.getResult().getValue(Integer.class);
+                    //Change noOfCards based on users preferred difficulty:
+                    if (difficulty == 0) {
+                        //easy difficulty
+                        noOfCardsX = 2;
+                        noOfCardsY = 3;
+                    } else if (difficulty == 1) {
+                        //medium difficulty
+                        noOfCardsX = 3;
+                        noOfCardsY = 4;
+                    } else {
+                        //hard difficulty
+                        noOfCardsX = 4;
+                        noOfCardsY = 4;
+                    }
+                    noOfCards = noOfCardsX * noOfCardsY;
+                    playGame();
+                } else {
+                    // Handle the error
+                    Toast.makeText(MatchGame.this, "Failed to get user data",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
         //Exit button
         exitGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +94,8 @@ public class MatchGame extends AppCompatActivity {
                 finish();
             }
         });
-
+    }
+    private void playGame(){
         //Get dimensions of device
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -82,6 +123,7 @@ public class MatchGame extends AppCompatActivity {
         for(int i = 0; i < noOfCards; i++){
             int finalI = i;
             cards.get(i).getImg().setOnClickListener(new View.OnClickListener() {
+                // Suppress warning for setting text directly in code
                 @SuppressLint("SetTextI18n")
                 @Override
                 public void onClick(View v) {
@@ -125,7 +167,6 @@ public class MatchGame extends AppCompatActivity {
             });
         }
     }
-
     private List<Card> createCards() {
         Random random = new Random();
 
@@ -208,8 +249,9 @@ public class MatchGame extends AppCompatActivity {
         cardImg.setMaxHeight(heightOfCard);
         cardImg.setMaxWidth(widthOfCard);
         cardImg.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        cardImg.setImageResource(R.drawable.sample_card);
+        cardImg.setImageResource(R.drawable.back_of_card);
 
         return cardImg;
     }
+
 }
