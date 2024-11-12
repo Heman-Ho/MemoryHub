@@ -68,14 +68,14 @@ public class MatchGame extends AppCompatActivity {
                     if (difficulty == 0) {
                         //easy difficulty
                         noOfCardsX = 2;
-                        noOfCardsY = 3;
+                        noOfCardsY = 2;
                     } else if (difficulty == 1) {
                         //medium difficulty
-                        noOfCardsX = 3;
-                        noOfCardsY = 4;
+                        noOfCardsX = 2;
+                        noOfCardsY = 3;
                     } else {
                         //hard difficulty
-                        noOfCardsX = 4;
+                        noOfCardsX = 3;
                         noOfCardsY = 4;
                     }
                     noOfCards = noOfCardsX * noOfCardsY;
@@ -239,7 +239,6 @@ public class MatchGame extends AppCompatActivity {
         //Create Cards
         ImageView cardImg = new ImageView(this);
         cardImg.setId(id);
-
         //Set parameters for card's ImageView
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         params.width = widthOfCard;
@@ -248,8 +247,9 @@ public class MatchGame extends AppCompatActivity {
         cardImg.setLayoutParams(params);
         cardImg.setMaxHeight(heightOfCard);
         cardImg.setMaxWidth(widthOfCard);
-        cardImg.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        cardImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
         cardImg.setImageResource(R.drawable.back_of_card);
+
 
         return cardImg;
     }
