@@ -249,6 +249,7 @@ public class MatchGame extends AppCompatActivity {
         cardImg.setMaxWidth(widthOfCard);
         cardImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
         cardImg.setImageResource(R.drawable.back_of_card);
+        cardImg.setBackgroundResource(R.drawable.rounded_corners);
 
 
         return cardImg;
