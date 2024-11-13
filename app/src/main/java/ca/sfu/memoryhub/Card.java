@@ -76,7 +76,7 @@ public class Card {
         if(this.showCard){
             //If the card is facing up, flip to the back of the card
             this.img.animate().setDuration(300).rotationYBy(-90f).start();
-            this.img.setImageResource(R.drawable.back_of_card);
+            this.img.setImageResource(R.drawable.sharpcornercard);
             this.img.setRotationY(90f);
             this.img.animate().setDuration(300).rotationYBy(-90f).start();
         }else{
