@@ -15,7 +15,7 @@
         android:layout_width="420dp"
         android:layout_height="486dp"
         android:layout_marginTop="56dp"
-        android:background=""
+
         android:src="@drawable/topbanner"
         android:translationY="-10dp"
         app:layout_constraintEnd_toEndOf="parent"
