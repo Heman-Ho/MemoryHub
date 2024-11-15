@@ -5,13 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="360dp"
+        android:src="@drawable/topbanner"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription" />
+
+
     <EditText
         android:id="@+id/edtUsernameReg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Email"
-        android:inputType="text"
+        android:inputType="textEmailAddress"
+        android:textColor="#000000"
+        android:textColorHint="#7A7A7A"
+        android:backgroundTint="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_edittext_background"
+        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.427"
@@ -23,51 +43,22 @@
         android:id="@+id/edtPasswordReg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/rounded_edittext_background"
+        android:backgroundTint="#FFFFFF"
         android:ems="10"
-        android:inputType="text"
         android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#7A7A7A"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.427"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtUsernameReg"
-        app:layout_constraintVertical_bias="0.068" />
-
-    <Button
-        android:id="@+id/btnRegisterAccount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.445"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtPasswordReg"
-        app:layout_constraintVertical_bias="0.251" />
-
-    <Button
-        android:id="@+id/btnBackToStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
-
-    <TextView
-        android:id="@+id/txtDisplayInfoReg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.599" />
+        app:layout_constraintVertical_bias="0.051" />
 
     <EditText
         android:id="@+id/edtUsername"
@@ -77,11 +68,54 @@
         android:ems="10"
         android:hint="Username"
         android:inputType="text"
+        android:textColor="#000000"
+        android:textColorHint="#7A7A7A"
+        android:backgroundTint="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_edittext_background"
+        android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.427"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.334" />
+
+    <Button
+        android:id="@+id/btnRegisterAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_button_background"
+        android:padding="12dp"
+        android:text="Register"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.451"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtPasswordReg"
+        app:layout_constraintVertical_bias="0.261" />
+
+    <Button
+        android:id="@+id/btnBackToStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_button_background"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
