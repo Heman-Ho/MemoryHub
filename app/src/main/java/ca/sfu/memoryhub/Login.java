@@ -17,25 +17,33 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+
+
+//Login Activity handles user login, including email/password authentication.
 public class Login extends AppCompatActivity{
+    // Firebase Authentication instance
     FirebaseAuth mAuth;
+
+    // UI components
     Button btnBackToStart;
     Button btnLogin;
     EditText edtEmailLog;
     EditText edtPasswordLog;
 
+    //Initializes the activity, setting up the layout and Firebase instance.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         mAuth = FirebaseAuth.getInstance();
 
-        //Find buttons and edit text
+        //Initialize buttons and edit text
         btnBackToStart = findViewById(R.id.btnBackToStart2);
         btnLogin = findViewById(R.id.btnLoginToApp);
         edtEmailLog = findViewById(R.id.edtEmailAddressLog);
         edtPasswordLog = findViewById(R.id.edtPasswordLog);
 
+        //Navigate to start page when back button is clicked
         btnBackToStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,6 +52,7 @@ public class Login extends AppCompatActivity{
             }
         });
 
+        // Handle login on clicking the login button
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,13 +85,7 @@ public class Login extends AppCompatActivity{
                                 }
                             }
                         });
-
-
-
             }
-
         });
-
-
     }
 }

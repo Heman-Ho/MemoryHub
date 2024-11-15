@@ -2,6 +2,10 @@ package ca.sfu.memoryhub;
 
 import android.widget.ImageView;
 
+
+/**
+ * Represents a card in the game, containing the card's image, location, and matching information.
+ */
 public class Card {
 
     private int location;
@@ -72,6 +76,12 @@ public class Card {
     }
 
     //Methods
+
+    /**
+     * Flips the card's image. If the card is showing its image, it flips to the back of the card;
+     * if it's showing the back, it flips to the card's image. This function also has built-in
+     * rotation animation.
+     */
     public void flipImg() {
         if(this.showCard){
             //If the card is facing up, flip to the back of the card

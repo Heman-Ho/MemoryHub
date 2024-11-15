@@ -30,33 +30,35 @@ import com.google.firebase.auth.FirebaseAuth;
 
 
 public class MatchGame extends AppCompatActivity {
-
-
+    // Variables to hold screen dimensions and card configurations
     int widthOfScreen, heightOfScreen, noOfCardsX = 2, noOfCardsY = 2,
             widthOfCard, heightOfCard, padding;
     Button exitGame;
     TextView hintText;
-    int noOfCards = noOfCardsX * noOfCardsY; //MUST BE EVEN
-    int correctCounter = 0;
+    int noOfCards = noOfCardsX * noOfCardsY; // Number of cards must be even
+    int correctCounter = 0; // Counter for correct matches used to determine end of game
     FirebaseDatabase db;
     DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Enable edge-to-edge layout for better UI
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_match_game);
+
+        // Adjust padding to account for system bars like status bar and navigation bar
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.matching_game_layout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        //Find ID's
+        //Find ID's for UI components
         exitGame = findViewById(R.id.exitMatchGame);
         hintText = findViewById(R.id.hintTextViewMatch);
 
-        //Get the current user object from firebase
+        //Get the current user's difficulty setting from firebase
         if(FirebaseAuth.getInstance().getCurrentUser()!= null) {
             String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
             DatabaseReference reference = FirebaseDatabase.getInstance()
@@ -64,7 +66,7 @@ public class MatchGame extends AppCompatActivity {
             reference.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     int difficulty = task.getResult().getValue(Integer.class);
-                    //Change noOfCards based on users preferred difficulty:
+                    //Change card layout based on users preferred difficulty:
                     if (difficulty == 0) {
                         //easy difficulty
                         noOfCardsX = 2;
@@ -79,15 +81,16 @@ public class MatchGame extends AppCompatActivity {
                         noOfCardsY = 4;
                     }
                     noOfCards = noOfCardsX * noOfCardsY;
+                    //Start the game
                     playGame();
                 } else {
-                    // Handle the error
+                    // Handle the retrieving user data error
                     Toast.makeText(MatchGame.this, "Failed to get user data",
                             Toast.LENGTH_SHORT).show();
                 }
             });
         }
-        //Exit button
+        //Exit button to finish the game and return to game fragment
         exitGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,15 +98,17 @@ public class MatchGame extends AppCompatActivity {
             }
         });
     }
+
+    //Function to initialize and start game
     private void playGame(){
-        //Get dimensions of device
+        //Get dimensions of device for card layout
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         widthOfScreen = displayMetrics.widthPixels;
         heightOfScreen = displayMetrics.heightPixels;
         padding = (int)(widthOfScreen * 0.03);
 
-        /* Calculate card sizes */
+        //Calculate card sizes based on screen dimensions
         widthOfCard = ((int) (widthOfScreen * 0.9) / noOfCardsX) - (padding);
         heightOfCard = ((int)(heightOfScreen * 0.8)/ noOfCardsY) - (padding);
 
@@ -113,12 +118,12 @@ public class MatchGame extends AppCompatActivity {
         //Create the board
         createBoard(cards);
 
-        //handler used for creating delay
+        //handler used for creating delay (used for flipping cards after x seconds)
         Handler handler = new Handler();
-
         final int[] numCardsFlipped = {0};
         final int[] previousFlipped = new int[1];
         boolean[] isInteractionEnabled = {true};
+
         //Set on click listener for cards
         for(int i = 0; i < noOfCards; i++){
             int finalI = i;
@@ -127,15 +132,18 @@ public class MatchGame extends AppCompatActivity {
                 @SuppressLint("SetTextI18n")
                 @Override
                 public void onClick(View v) {
-                    //Game logic
+                    // Only process if the clicked card is faced down and
+                    // interaction is enabled (to prevent user from flipping cards too fast)
                     if(! cards.get(finalI).isShowCard() && isInteractionEnabled[0]){
                         isInteractionEnabled[0] = false;
-                        //Tapped card is faced down
+                        //Flip the card face up
                         cards.get(finalI).flipImg();
                         numCardsFlipped[0] += 1;
+
+                        // If two cards are flipped, then check if the images match
                         if(numCardsFlipped[0] == 2){
                             if(cards.get(finalI).getLoc() == cards.get(previousFlipped[0]).getMatchingLoc()){
-                                // Cards do match
+                                // Cards do match, mark them as correct
                                 cards.get(finalI).setCorrect(true);
                                 cards.get(previousFlipped[0]).setCorrect(true);
                                 correctCounter += 2;
@@ -151,10 +159,13 @@ public class MatchGame extends AppCompatActivity {
                                         cards.get(previousFlipped[0]).flipImg();
                                         isInteractionEnabled[0] = true;
                                     }
-                                }, 1400); // Delay in milliseconds (e.g., 1 second)
+                                }, 1400); // Delay in milliseconds
                             }
+                            // Reset number of cards flipped because one pair of guesses is complete
                             numCardsFlipped[0] = 0;
                         }else{
+                            // One card has been flipped so far,
+                            // store the index of the first card flipped
                             previousFlipped[0] = finalI;
                             isInteractionEnabled[0] = true;
                         }
@@ -167,10 +178,15 @@ public class MatchGame extends AppCompatActivity {
             });
         }
     }
+
+    // Function to create the cards with images and random positions
+    // Returns a list of cards with the indices corresponding to the card's location.
+    // Each card is given a random location and stores it's own location and
+    // the location of it's matching pair
     private List<Card> createCards() {
         Random random = new Random();
 
-        //Create images array from Gallery (gallery is not complete so placeholder)
+        // Array of images for the cards (sample images as gallery is incomplete)
         int[] images = {
                 R.drawable.sample_image01,
                 R.drawable.sample_image02,
@@ -196,7 +212,7 @@ public class MatchGame extends AppCompatActivity {
         Arrays.fill(locEmpty, 1);
 
         for(int i = 0; i < noOfCards/2; i++) {
-            // Find random unclaimed location for two cards
+            // Find random unclaimed location for a pair of matching cards
             int randomLoc1 = random.nextInt(noOfCards);
             while(locEmpty[randomLoc1] == 0){
                 randomLoc1 = (randomLoc1 + 1) % noOfCards;
@@ -208,17 +224,22 @@ public class MatchGame extends AppCompatActivity {
             }
             locEmpty[randomLoc2] = 0;
 
+            // Create two ImageViews for pair of cards
             ImageView cardImgView1 = createCardImgView(i * 2);
             ImageView cardImgView2 = createCardImgView(i * 2 + 1);
 
+            // Create two Card objects for matching pair of cards
             Card card1 = new Card(randomLoc1, randomLoc2, cardImgView1, images[i],false, false);
             Card card2 = new Card(randomLoc2, randomLoc1, cardImgView2, images[i], false, false);
+
+            // Adds the card into it's random location as the index of the cards list
             cards.set(randomLoc1, card1);
             cards.set(randomLoc2, card2);
         }
         return cards;
     }
 
+    // Function to initialize the game board layout and add the cards
     private void createBoard(List<Card> cards) {
 
         GridLayout gameBoard = findViewById(R.id.match_board);
@@ -235,11 +256,12 @@ public class MatchGame extends AppCompatActivity {
 
     }
 
+    //Function to create ImageView for a card
     private ImageView createCardImgView(int id){
-        //Create Cards
+        // Create Cards
         ImageView cardImg = new ImageView(this);
         cardImg.setId(id);
-        //Set parameters for card's ImageView
+        // Set parameters for card's ImageView
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         params.width = widthOfCard;
         params.height = heightOfCard;
