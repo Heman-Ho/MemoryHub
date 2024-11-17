@@ -363,7 +363,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                     if (numPiecesCorrect == totalNumPieces) {
                         Toast.makeText(puzzle.this, "Congrats! You Won the Game!", Toast.LENGTH_SHORT).show();
                         try {
-                            Thread.sleep(200); // Wait for a moment before moving to next screen
+                            Thread.sleep(500); // Wait for a moment before moving to next screen
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }

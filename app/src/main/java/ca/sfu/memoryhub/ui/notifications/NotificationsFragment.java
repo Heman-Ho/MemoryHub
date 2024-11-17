@@ -94,11 +94,11 @@ public class NotificationsFragment extends Fragment {
                 String item = parent.getItemAtPosition(position).toString();
                 switch (item) {
                     case "Easy":
+                        difficulty = 0;
                         reference.setValue(0).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
                                 Toast.makeText(getContext(), "Difficulty set to Easy", Toast.LENGTH_SHORT).show();
-                                difficulty = 0;
                             } else {
                                 // Handle the error
                                 Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();
@@ -106,11 +106,11 @@ public class NotificationsFragment extends Fragment {
                         });
                         break;
                     case "Medium":
+                        difficulty = 1;
                         reference.setValue(1).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
                                 Toast.makeText(getContext(), "Difficulty set to Medium", Toast.LENGTH_SHORT).show();
-                                difficulty = 1;
                             } else {
                                 // Handle the error
                                 Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();
@@ -118,11 +118,11 @@ public class NotificationsFragment extends Fragment {
                         });
                         break;
                     case "Hard":
+                        difficulty = 2;
                         reference.setValue(2).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
                                 Toast.makeText(getContext(), "Difficulty set to Hard", Toast.LENGTH_SHORT).show();
-                                difficulty = 2;
                             } else {
                                 // Handle the error
                                 Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();
@@ -132,9 +132,6 @@ public class NotificationsFragment extends Fragment {
                 }
             }
         });
-//        final TextView textView = binding.textNotifications;
-//        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
         return root;
     }
 
