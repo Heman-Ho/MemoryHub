@@ -1,6 +1,7 @@
 package ca.sfu.memoryhub.ui.dashboard;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ public class DashboardFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
                         Uri selectedImageUri = result.getData().getData();
+                        Log.d("Selected Image URI", selectedImageUri.toString());
                         if (selectedImageUri != null) {
                             uploadImageToFirebase(selectedImageUri);
                         }
