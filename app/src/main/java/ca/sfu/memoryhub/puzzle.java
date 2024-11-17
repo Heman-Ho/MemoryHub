@@ -367,8 +367,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-                        Intent i = new Intent(puzzle.this, MainActivity.class);
-                        startActivity(i);
+                        finish();
                     }
                 }
                 break;
