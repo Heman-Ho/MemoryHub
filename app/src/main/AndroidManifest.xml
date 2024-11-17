@@ -20,6 +20,10 @@
             android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="false" />
         <activity
+            android:name=".puzzle"
+            android:theme="@style/Theme.Material3.Dark.NoActionBar"
+            android:exported="false" />
+        <activity
             android:name=".Settings"
             android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="false" />
