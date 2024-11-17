@@ -2,6 +2,9 @@ package ca.sfu.memoryhub;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,13 +20,14 @@ import ca.sfu.memoryhub.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Binding object to reference the views in the activity layout
     private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Check if user is logged in
+        //Check if user is logged in
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
             // User is not logged in, redirect to StartPage
@@ -33,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        // Initialize the binding object to access the layout views
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -43,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration); This line is causing the crash
         NavigationUI.setupWithNavController(binding.navView, navController);
 
 

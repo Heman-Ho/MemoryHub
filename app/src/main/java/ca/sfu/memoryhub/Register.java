@@ -16,14 +16,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
 
 public class Register extends AppCompatActivity{
 
-    EditText edtUsernameReg, edtPasswordReg;
+    EditText edtUsernameReg, edtPasswordReg, edtUsername;
     Button btnRegisterAccount, btnBackToStart;
     TextView txtDisplayInfoReg;
 
     FirebaseAuth mAuth;
+    FirebaseDatabase db;
+
+    DatabaseReference reference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,7 @@ public class Register extends AppCompatActivity{
         btnRegisterAccount = findViewById(R.id.btnRegisterAccount);
         btnBackToStart = findViewById(R.id.btnBackToStart);
         txtDisplayInfoReg = findViewById(R.id.txtDisplayInfoReg);
+        edtUsername = findViewById(R.id.edtUsername);
 
         btnBackToStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,31 +61,60 @@ public class Register extends AppCompatActivity{
 
                 String strEmail = edtUsernameReg.getText().toString();
                 String strPassword = edtPasswordReg.getText().toString();
+                String strUsername = edtUsername.getText().toString();
 
-                if(strEmail.isEmpty() || strPassword.isEmpty()){
+                if(strEmail.isEmpty() || strPassword.isEmpty() || strUsername.isEmpty()){
                     Toast.makeText(Register.this, "All fields are required", Toast.LENGTH_SHORT).show();
                 }else if (strPassword.length() < 6){
                     Toast.makeText(Register.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    //Create the user
-                    mAuth.createUserWithEmailAndPassword(strEmail, strPassword)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if(task.isSuccessful()){
-                                    Toast.makeText(Register.this, "Account successfully created.",
-                                            Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Toast.makeText(Register.this, "Authentication failed.",
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                    createUser(strEmail, strPassword, strUsername);
                 }
             }
         });
     }
+
+    //Method to create User
+    private void createUser(String email, String password, String username){
+        //Create the user
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(Register.this, "Account successfully created.",
+                                    Toast.LENGTH_LONG).show();
+                            String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+                            saveUserData(username, uid);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(Register.this, "Authentication failed.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+    //Method to save user data to database
+    private void saveUserData(String username, String uid){
+        Users user  = new Users(username);
+        db = FirebaseDatabase.getInstance();
+        reference = db.getReference("Users");
+
+        reference.child(uid).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    edtUsername.setText("");
+                    edtUsernameReg.setText("");
+                    edtPasswordReg.setText("");
+                    Toast.makeText(Register.this, "User data saved successfully.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(Register.this, "Failed to save user data.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 }
 
