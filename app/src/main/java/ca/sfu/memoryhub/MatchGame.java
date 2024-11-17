@@ -1,6 +1,8 @@
 package ca.sfu.memoryhub;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -28,8 +30,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseAuth;
 
-
 public class MatchGame extends AppCompatActivity {
+    private int difficulty = 1;
+    // id used to extract difficulty setting from games fragment
+    private static final String GAME_DIFFICULTY = "match game difficulty";
     // Variables to hold screen dimensions and card configurations
     int widthOfScreen, heightOfScreen, noOfCardsX = 2, noOfCardsY = 2,
             widthOfCard, heightOfCard, padding;
@@ -58,38 +62,26 @@ public class MatchGame extends AppCompatActivity {
         exitGame = findViewById(R.id.exitMatchGame);
         hintText = findViewById(R.id.hintTextViewMatch);
 
-        //Get the current user's difficulty setting from firebase
-        if(FirebaseAuth.getInstance().getCurrentUser()!= null) {
-            String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-            DatabaseReference reference = FirebaseDatabase.getInstance()
-                    .getReference("Users").child(uid).child("difficulty");
-            reference.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    int difficulty = task.getResult().getValue(Integer.class);
-                    //Change card layout based on users preferred difficulty:
-                    if (difficulty == 0) {
-                        //easy difficulty
-                        noOfCardsX = 2;
-                        noOfCardsY = 2;
-                    } else if (difficulty == 1) {
-                        //medium difficulty
-                        noOfCardsX = 2;
-                        noOfCardsY = 3;
-                    } else {
-                        //hard difficulty
-                        noOfCardsX = 3;
-                        noOfCardsY = 4;
-                    }
-                    noOfCards = noOfCardsX * noOfCardsY;
-                    //Start the game
-                    playGame();
-                } else {
-                    // Handle the retrieving user data error
-                    Toast.makeText(MatchGame.this, "Failed to get user data",
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
+        // Extract the difficulty setting from games fragment intent
+        extractDifficulty();
+
+        if (difficulty == 0) {
+            //easy difficulty
+            noOfCardsX = 2;
+            noOfCardsY = 2;
+        } else if (difficulty == 1) {
+            //medium difficulty
+            noOfCardsX = 2;
+            noOfCardsY = 3;
+        } else {
+            //hard difficulty
+            noOfCardsX = 3;
+            noOfCardsY = 4;
         }
+        noOfCards = noOfCardsX * noOfCardsY;
+        //Start the game
+        playGame();
+
         //Exit button to finish the game and return to game fragment
         exitGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -275,6 +267,19 @@ public class MatchGame extends AppCompatActivity {
 
 
         return cardImg;
+    }
+
+    // Gets the game difficulty setting passed by makeIntent method
+    private void extractDifficulty() {
+        Intent i = getIntent();
+        difficulty = i.getIntExtra(GAME_DIFFICULTY, 1);
+    }
+
+    // Create custom make intent function to pass difficulty setting from games fragment
+    public static Intent makeIntent(Context context, int difficulty){
+        Intent i = new Intent(context, MatchGame.class);
+        i.putExtra(GAME_DIFFICULTY, difficulty);
+        return i;
     }
 
 }
