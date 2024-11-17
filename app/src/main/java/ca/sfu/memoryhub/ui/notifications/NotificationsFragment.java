@@ -50,7 +50,7 @@ public class NotificationsFragment extends Fragment {
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.puzzleButton.setOnClickListener(new View.OnClickListener() {
+        binding.btnPuzzleGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), puzzle.class);

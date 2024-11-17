@@ -25,7 +25,7 @@ public class Register extends AppCompatActivity{
 
     EditText edtUsernameReg, edtPasswordReg, edtUsername;
     Button btnRegisterAccount, btnBackToStart;
-    TextView txtDisplayInfoReg;
+//    TextView txtDisplayInfoReg;
 
     FirebaseAuth mAuth;
     FirebaseDatabase db;
@@ -44,7 +44,7 @@ public class Register extends AppCompatActivity{
         edtPasswordReg = findViewById(R.id.edtPasswordReg);
         btnRegisterAccount = findViewById(R.id.btnRegisterAccount);
         btnBackToStart = findViewById(R.id.btnBackToStart);
-        txtDisplayInfoReg = findViewById(R.id.txtDisplayInfoReg);
+//        txtDisplayInfoReg = findViewById(R.id.txtDisplayInfoReg);
         edtUsername = findViewById(R.id.edtUsername);
 
         btnBackToStart.setOnClickListener(new View.OnClickListener() {
