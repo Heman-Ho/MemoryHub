@@ -9,14 +9,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import android.content.Intent;
+
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,11 +22,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Objects;
 
 import ca.sfu.memoryhub.puzzle;
-import ca.sfu.memoryhub.StartPage;
 import ca.sfu.memoryhub.MatchGame;
 import ca.sfu.memoryhub.R;
 import ca.sfu.memoryhub.databinding.FragmentNotificationsBinding;
-import ca.sfu.memoryhub.databinding.PuzzleGameBinding;
+
 
 public class NotificationsFragment extends Fragment {
 
@@ -39,6 +34,7 @@ public class NotificationsFragment extends Fragment {
     ArrayAdapter<String> adapterItems;
     FirebaseDatabase db;
     DatabaseReference reference;
+    int difficulty = 1; // Default difficulty set to medium
 
     private FragmentNotificationsBinding binding;
 
@@ -49,23 +45,6 @@ public class NotificationsFragment extends Fragment {
 
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        binding.btnPuzzleGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getContext(), puzzle.class);
-                startActivity(i);
-            }
-        });
-
-        binding.btnMatchGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getContext(), MatchGame.class);
-                startActivity(i);
-            }
-        });
-
 
         //Set up firebase access to difficulty setting
 
@@ -81,12 +60,31 @@ public class NotificationsFragment extends Fragment {
         //Set default text to what is stored in firebase
         reference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                int difficulty = task.getResult().getValue(Integer.class);
-                //set the textview to be saved preference
-                autoCompleteTextView.setText(difficulties[difficulty]);
-                autoCompleteTextView.setAdapter(adapterItems);
+                difficulty = task.getResult().getValue(Integer.class);
+            }
+            //set the textview to be saved preference
+            autoCompleteTextView.setText(difficulties[difficulty]);
+            autoCompleteTextView.setAdapter(adapterItems);
+        });
+
+        //Set up onClickListeners for buttons to access games
+        binding.btnPuzzleGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = puzzle.makeIntent(getContext(), difficulty);
+                startActivity(i);
             }
         });
+
+        binding.btnMatchGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = MatchGame.makeIntent(getContext(), difficulty);
+                startActivity(i);
+            }
+        });
+
+
 
 
 
@@ -100,6 +98,7 @@ public class NotificationsFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
                                 Toast.makeText(getContext(), "Difficulty set to Easy", Toast.LENGTH_SHORT).show();
+                                difficulty = 0;
                             } else {
                                 // Handle the error
                                 Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();
@@ -111,6 +110,7 @@ public class NotificationsFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
                                 Toast.makeText(getContext(), "Difficulty set to Medium", Toast.LENGTH_SHORT).show();
+                                difficulty = 1;
                             } else {
                                 // Handle the error
                                 Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();
@@ -122,6 +122,7 @@ public class NotificationsFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
                                 Toast.makeText(getContext(), "Difficulty set to Hard", Toast.LENGTH_SHORT).show();
+                                difficulty = 2;
                             } else {
                                 // Handle the error
                                 Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();

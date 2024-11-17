@@ -3,6 +3,7 @@ package ca.sfu.memoryhub;
 import static java.lang.Math.abs;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -18,10 +19,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 public class puzzle extends AppCompatActivity implements View.OnTouchListener{
+    // id used to extract difficulty setting from games fragment
+    private static final String GAME_DIFFICULTY = "game difficulty";
     //puzzlePieces stores the bitmaps of all puzzle pieces
     private ArrayList<Bitmap> puzzlePieces;
     //puzzlePieceStartingLocations stores all the coordinates of where the pieces should start on the screen
@@ -32,9 +40,10 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
     //numPiecesCorrect stores the amount of pieces that have been put in the correct spot
     private int numPiecesCorrect = 0;
     //totalNumPieces stores the total number of pieces in the puzzle
-    final private int totalNumPieces = getPuzzleDim()*getPuzzleDim();
+    private int totalNumPieces = getPuzzleDim()*getPuzzleDim();
     //solutionCoords stores all the correct x & y coordinates for each puzzle piece. the coordinates are the top-left of each piece
     private ArrayList<Float> solutionCoords = new ArrayList<>();
+    private int difficulty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +59,14 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                 finish();
             }
         });
+        
+        // Extract the difficulty setting from games fragment intent
+        extractDifficulty();
+        // Easy difficulty (0) -> puzzleDim = 2
+        // Medium difficulty (1) -> puzzleDim = 3
+        // Hard difficulty (2) -> puzzleDim = 4
+        puzzleDim = difficulty + 2;
+        totalNumPieces = getPuzzleDim()*getPuzzleDim();
 
         //gets the relative layout used in the .xml
         final RelativeLayout layout = findViewById(R.id.layout);
@@ -95,6 +112,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
 
 
     }
+
     //adds different starting locations for the puzzle pieces
     private void setPieceStartingLocations(){
         puzzlePieceStartingLocations.clear();//done as a pre-caution-> not necessary
@@ -356,5 +374,17 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                 break;
         }
         return true;
+    }
+    // Gets the game difficulty setting passed by makeIntent method
+    private void extractDifficulty() {
+        Intent i = getIntent();
+        difficulty = i.getIntExtra(GAME_DIFFICULTY, 1);
+    }
+
+    // Create custom make intent function to pass difficulty setting from games fragment
+    public static Intent makeIntent(Context context, int difficulty){
+        Intent i = new Intent(context, puzzle.class);
+        i.putExtra(GAME_DIFFICULTY, difficulty);
+        return i;
     }
 }
