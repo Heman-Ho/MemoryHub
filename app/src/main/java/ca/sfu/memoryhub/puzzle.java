@@ -304,7 +304,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         return puzzleDim;
     }
 
-// allows users to move the puzzle pieces and checks if the piece is in the correct position. also checks if the puzzle is complete
+    // allows users to move the puzzle pieces and checks if the piece is in the correct position. also checks if the puzzle is complete
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         float x = event.getRawX();
@@ -324,8 +324,16 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         // Get the actual position of the view on screen
         int[] screenCoords = new int[2];
         v.getLocationOnScreen(screenCoords);
+        ArrayList<ImageView> ret = new ArrayList<ImageView>(totalNumPieces);
+        ImageView puzzleImage = (ImageView) findViewById(R.id.puzzleImage);
+        BitmapDrawable imageBitmap = (BitmapDrawable) puzzleImage.getDrawable();
+        Bitmap bitmap = imageBitmap.getBitmap();
 
-
+        int puzzlePieceWidth = bitmap.getWidth()/puzzleDim;
+        int puzzlePieceHeight = bitmap.getHeight()/puzzleDim;
+        float scale = getScale();
+        int scaledWidth = (int) (scale*puzzlePieceWidth);
+        int scaledHeight = (int) (scale*puzzlePieceHeight);
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 xDelta = x - screenCoords[0];
@@ -334,8 +342,8 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
 
             case MotionEvent.ACTION_MOVE:
                 // Update the puzzle pieces position based on the new touch coordinates
-                v.setX(x - xDelta);
-                v.setY(y - yDelta);
+                v.setX((x - xDelta)-((float) (scaledWidth /2)));
+                v.setY(y - yDelta - ((float)(scaledHeight/2)));
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -363,11 +371,12 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                     if (numPiecesCorrect == totalNumPieces) {
                         Toast.makeText(puzzle.this, "Congrats! You Won the Game!", Toast.LENGTH_SHORT).show();
                         try {
-                            Thread.sleep(500); // Wait for a moment before moving to next screen
+                            Thread.sleep(200); // Wait for a moment before moving to next screen
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-                        finish();
+                        Intent i = new Intent(puzzle.this, MainActivity.class);
+                        startActivity(i);
                     }
                 }
                 break;
