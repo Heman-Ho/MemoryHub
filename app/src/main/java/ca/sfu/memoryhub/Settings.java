@@ -31,7 +31,7 @@ public class Settings extends AppCompatActivity {
             }
         });
 
-        Button btnLogout = findViewById(R.id.btnLogout);
+        ImageButton btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

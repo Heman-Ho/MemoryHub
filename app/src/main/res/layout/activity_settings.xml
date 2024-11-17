@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
-
+    <!--
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="wrap_content"
@@ -30,5 +30,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.181" />
+        -->
+
+    <ImageButton
+        android:id="@+id/btnLogout"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="144dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logouticon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
