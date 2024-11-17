@@ -12,31 +12,32 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Material3.Dark"
+        android:theme="@style/Theme.Material3.Light"
         tools:targetApi="31">
         <!-- Add activities here -->
         <activity
             android:name=".MatchGame"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar"
+            android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="false" />
         <activity
             android:name=".Settings"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar"
+            android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="false" />
+
 
         <activity
             android:name=".Login"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
+            android:theme="@style/Theme.Material3.Light.NoActionBar" />
         <activity
             android:name=".Register"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
+            android:theme="@style/Theme.Material3.Light.NoActionBar" />
         <activity
             android:name=".StartPage"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar" />
+            android:theme="@style/Theme.Material3.Light.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Material3.Dark.NoActionBar">
+            android:theme="@style/Theme.Material3.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
