@@ -99,6 +99,7 @@ public class Register extends AppCompatActivity{
         db = FirebaseDatabase.getInstance();
         reference = db.getReference("Users");
 
+        // Sets the user's username and difficulty value = 1 to the realtime database
         reference.child(uid).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
