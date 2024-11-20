@@ -112,12 +112,13 @@ public class MatchGame extends AppCompatActivity {
         padding = (int)(widthOfScreen * 0.03);
         textSize = (float) Math.min(widthOfScreen * 0.02f, heightOfScreen * 0.02);
 
-        // Make button proportional to screen
+        // Make text size proportional to screen
         exitGame.setTextSize(textSize);
+        hintText.setTextSize(textSize);
 
         //Calculate card sizes based on screen dimensions
         widthOfCard = ((int) (widthOfScreen * 0.9) / noOfCardsX) - (padding);
-        heightOfCard = ((int)(heightOfScreen * 0.8)/ noOfCardsY) - (padding);
+        heightOfCard = ((int)(heightOfScreen * 0.85)/ noOfCardsY) - (padding);
 
         //Calculate size of fullscreen dialog based on screen dimensions
         widthOfDialog = (int) (widthOfScreen * 0.8);
@@ -169,6 +170,7 @@ public class MatchGame extends AppCompatActivity {
                                         cards.get(finalI).flipImg();
                                         cards.get(previousFlipped[0]).flipImg();
                                         isInteractionEnabled[0] = true;
+                                        hintText.setText("");
                                     }
                                 }, 1400); // Delay in milliseconds
                             }
@@ -280,7 +282,7 @@ public class MatchGame extends AppCompatActivity {
         GridLayout gameBoard = findViewById(R.id.match_board);
         gameBoard.setRowCount(noOfCardsY);
         gameBoard.setColumnCount(noOfCardsX);
-        gameBoard.getLayoutParams().height = (int)(heightOfScreen * 0.8) + padding;
+        gameBoard.getLayoutParams().height = (int)(heightOfScreen * 0.85) + padding;
         gameBoard.getLayoutParams().width = (int)(widthOfScreen * 0.9) + padding;
 
         //Add cards to grid
