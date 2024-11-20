@@ -110,7 +110,10 @@ public class MatchGame extends AppCompatActivity {
         widthOfScreen = displayMetrics.widthPixels;
         heightOfScreen = displayMetrics.heightPixels;
         padding = (int)(widthOfScreen * 0.03);
-        textSize = widthOfScreen * 0.02f;
+        textSize = (float) Math.min(widthOfScreen * 0.02f, heightOfScreen * 0.02);
+
+        // Make button proportional to screen
+        exitGame.setTextSize(textSize);
 
         //Calculate card sizes based on screen dimensions
         widthOfCard = ((int) (widthOfScreen * 0.9) / noOfCardsX) - (padding);
