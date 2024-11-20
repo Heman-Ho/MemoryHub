@@ -1,15 +1,20 @@
 package ca.sfu.memoryhub;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,9 +41,12 @@ public class MatchGame extends AppCompatActivity {
     private static final String GAME_DIFFICULTY = "match game difficulty";
     // Variables to hold screen dimensions and card configurations
     int widthOfScreen, heightOfScreen, noOfCardsX = 2, noOfCardsY = 2,
-            widthOfCard, heightOfCard, padding;
+            widthOfCard, heightOfCard, padding, widthOfDialog, heightOfDialog;
+    float textSize;
     Button exitGame;
-    TextView hintText;
+    TextView hintText, fullscreenTextView;
+    ImageView fullscreenImageView;
+    Dialog mDialog;
     int noOfCards = noOfCardsX * noOfCardsY; // Number of cards must be even
     int correctCounter = 0; // Counter for correct matches used to determine end of game
     FirebaseDatabase db;
@@ -57,6 +65,9 @@ public class MatchGame extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Initialize Pop up for fullscreen images
+        mDialog = new Dialog(this);
 
         //Find ID's for UI components
         exitGame = findViewById(R.id.exitMatchGame);
@@ -99,10 +110,15 @@ public class MatchGame extends AppCompatActivity {
         widthOfScreen = displayMetrics.widthPixels;
         heightOfScreen = displayMetrics.heightPixels;
         padding = (int)(widthOfScreen * 0.03);
+        textSize = widthOfScreen * 0.02f;
 
         //Calculate card sizes based on screen dimensions
         widthOfCard = ((int) (widthOfScreen * 0.9) / noOfCardsX) - (padding);
         heightOfCard = ((int)(heightOfScreen * 0.8)/ noOfCardsY) - (padding);
+
+        //Calculate size of fullscreen dialog based on screen dimensions
+        widthOfDialog = (int) (widthOfScreen * 0.8);
+        heightOfDialog = (int) (heightOfScreen * 0.8);
 
         //Create random Card Array
         List<Card> cards = createCards();
@@ -161,6 +177,30 @@ public class MatchGame extends AppCompatActivity {
                             previousFlipped[0] = finalI;
                             isInteractionEnabled[0] = true;
                         }
+                    } else if(isInteractionEnabled[0]){
+                        // Card is already faced up, show the image in fullscreen
+                        mDialog.setContentView(R.layout.fullscreen_image);
+                        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                        fullscreenImageView = mDialog.findViewById(R.id.fullscreenImageView);
+                        fullscreenTextView = mDialog.findViewById(R.id.fullscreenTextView);
+
+                        // Set up parameters for pop up based on screen dimensions
+                        WindowManager.LayoutParams layoutParams = mDialog.getWindow().getAttributes();
+                        layoutParams.width = widthOfDialog; // 0.8 * widthOfScreen
+                        layoutParams.height = heightOfDialog; // 0.8 * widthOfScreen
+                        mDialog.getWindow().setAttributes(layoutParams);
+
+                        // Set up parameters for ImageView and TextView
+                        fullscreenImageView.getLayoutParams().width = widthOfDialog;
+                        fullscreenImageView.getLayoutParams().height = (int)(heightOfDialog * 0.8);
+                        fullscreenTextView.getLayoutParams().width = widthOfDialog;
+                        fullscreenTextView.getLayoutParams().height = (int)(heightOfDialog * 0.2);
+                        fullscreenTextView.setTextSize(textSize);
+
+                        // Display the current card's image
+                        fullscreenImageView.setImageResource(cards.get(finalI).getImgResource());
+                        mDialog.show();
                     }
                     // Check for game completion
                     if(correctCounter >= noOfCards){
