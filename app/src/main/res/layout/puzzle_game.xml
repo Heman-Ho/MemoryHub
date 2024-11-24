@@ -4,21 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/root"
+    android:id="@+id/puzzle_game"
     android:background="@color/white"
     >
 
     <ImageView
         android:id="@+id/puzzleImage"
-        android:layout_width="341dp"
-        android:layout_height="341dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:alpha="0.5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.228"
-        app:srcCompat="@drawable/test" />
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintVertical_bias="0.10"
+        app:layout_constraintDimensionRatio="1:1"
+        app:srcCompat="@drawable/vertical_test" />
 
     <Button
         android:id="@+id/exitButton"
@@ -33,15 +35,15 @@
         app:layout_constraintVertical_bias="0.015" />
 
 
-        <RelativeLayout
-        android:id="@+id/layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </RelativeLayout>
+<!--        <RelativeLayout-->
+<!--        android:id="@+id/puzzle_game_relative_layout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
+<!--    </RelativeLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
