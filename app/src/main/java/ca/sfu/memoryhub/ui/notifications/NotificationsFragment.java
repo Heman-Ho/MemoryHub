@@ -18,7 +18,12 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import ca.sfu.memoryhub.puzzle;
@@ -34,7 +39,9 @@ public class NotificationsFragment extends Fragment {
     ArrayAdapter<String> adapterItems;
     FirebaseDatabase db;
     DatabaseReference reference;
+    FirebaseStorage storage;
     int difficulty = 1; // Default difficulty set to medium
+    int matchGameNumImages = 6;
 
     private FragmentNotificationsBinding binding;
 
@@ -67,20 +74,36 @@ public class NotificationsFragment extends Fragment {
             autoCompleteTextView.setAdapter(adapterItems);
         });
 
+        // Retrieve List of 6 ImagesUrls from firebase storage for the match game
+        List<String> imageUrls = new ArrayList<>();
+        addGalleryImagesTo(imageUrls, matchGameNumImages);
+
+        // Retrieve 1 random ImageUrl from firebase storage for puzzle game
+        List<String> puzzleImageUrl = new ArrayList<>();
+        addGalleryImagesTo(puzzleImageUrl, 1);
+
         //Set up onClickListeners for buttons to access games
         binding.btnPuzzleGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = puzzle.makeIntent(getContext(), difficulty);
-                startActivity(i);
+                if(puzzleImageUrl.size() == 1){
+                    Intent i = puzzle.makeIntent(getContext(), difficulty, puzzleImageUrl.get(0));
+                    startActivity(i);
+                }else{
+                    Toast.makeText(getContext(), "Please wait while images are loading", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         binding.btnMatchGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = MatchGame.makeIntent(getContext(), difficulty);
-                startActivity(i);
+                if(imageUrls.size() == matchGameNumImages){
+                    Intent i = MatchGame.makeIntent(getContext(), difficulty, imageUrls);
+                    startActivity(i);
+                }else{
+                    Toast.makeText(getContext(), "Please wait while images are loading", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -133,6 +156,46 @@ public class NotificationsFragment extends Fragment {
             }
         });
         return root;
+    }
+
+    // Takes a list of strings and adds images from the gallery as urls to the list.
+    // If there are less than numImages images in the firebase storage, sample images are
+    // added to the list instead. A maximum of 6 sample images are provided.
+    private void addGalleryImagesTo(List<String> images, int numImages) {
+        storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        // Get the user id to access the current user's folder in firebase storage
+        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        StorageReference imageFolderRef = storageRef.child("images/").child(uid);
+        StorageReference sampleFolderRef = storageRef.child("images/").child("samples/");
+        final int[] i = {0};
+        imageFolderRef.listAll().addOnSuccessListener(listResult -> {
+            List<StorageReference> items = listResult.getItems();
+
+            // Shuffle the list of items to randomize the order
+            Collections.shuffle(items);
+            int numPhotosInGallery = items.size();
+            // Create the list of image urls
+            while(i[0] < numImages && i[0] < numPhotosInGallery){
+                items.get(i[0]).getDownloadUrl().addOnSuccessListener(uri -> {
+                    images.add(uri.toString());
+                });
+                i[0]++;
+            }
+
+            // if there is not enough images in the user's gallery,
+            // add sample images until the size of images list equals to numImages
+            sampleFolderRef.listAll().addOnSuccessListener(sampleListResult -> {
+                List<StorageReference> sampleItems = sampleListResult.getItems();
+                while(i[0] < numImages){
+                    sampleItems.get(i[0]).getDownloadUrl().addOnSuccessListener(uri -> {
+                        images.add(uri.toString());
+                    });
+                    i[0] ++;
+                }
+            });
+        });
     }
 
     @Override

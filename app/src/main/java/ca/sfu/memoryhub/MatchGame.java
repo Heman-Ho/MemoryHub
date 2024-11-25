@@ -14,15 +14,12 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import androidx.activity.EdgeToEdge;
@@ -31,26 +28,31 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
 
 public class MatchGame extends AppCompatActivity {
     private int difficulty = 1;
     // id used to extract difficulty setting from games fragment
     private static final String GAME_DIFFICULTY = "match game difficulty";
+    // id used to extract images list from games fragment
+    private static final String IMAGE_URLS = "match game images";
     // Variables to hold screen dimensions and card configurations
-    int widthOfScreen, heightOfScreen, noOfCardsX = 2, noOfCardsY = 2,
+    private int widthOfScreen, heightOfScreen, noOfCardsX = 2, noOfCardsY = 2,
             widthOfCard, heightOfCard, padding, widthOfDialog, heightOfDialog;
-    float textSize;
+    private float textSize;
     Button exitGame;
     TextView hintText, fullscreenTextView;
     ImageView fullscreenImageView;
     Dialog mDialog;
     int noOfCards = noOfCardsX * noOfCardsY; // Number of cards must be even
     int correctCounter = 0; // Counter for correct matches used to determine end of game
+    ArrayList<String> imageUrls = new ArrayList<>(); // List of images from gallery
     FirebaseDatabase db;
     DatabaseReference reference;
+    FirebaseStorage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +75,8 @@ public class MatchGame extends AppCompatActivity {
         exitGame = findViewById(R.id.exitMatchGame);
         hintText = findViewById(R.id.hintTextViewMatch);
 
-        // Extract the difficulty setting from games fragment intent
-        extractDifficulty();
+        // Extract the difficulty setting and array of images from games fragment intent
+        extractData();
 
         if (difficulty == 0) {
             //easy difficulty
@@ -110,11 +112,15 @@ public class MatchGame extends AppCompatActivity {
         widthOfScreen = displayMetrics.widthPixels;
         heightOfScreen = displayMetrics.heightPixels;
         padding = (int)(widthOfScreen * 0.03);
-        textSize = widthOfScreen * 0.02f;
+        textSize = (float) Math.min(widthOfScreen * 0.02f, heightOfScreen * 0.02);
+
+        // Make text size proportional to screen
+        exitGame.setTextSize(textSize);
+        hintText.setTextSize(textSize);
 
         //Calculate card sizes based on screen dimensions
         widthOfCard = ((int) (widthOfScreen * 0.9) / noOfCardsX) - (padding);
-        heightOfCard = ((int)(heightOfScreen * 0.8)/ noOfCardsY) - (padding);
+        heightOfCard = ((int)(heightOfScreen * 0.85)/ noOfCardsY) - (padding);
 
         //Calculate size of fullscreen dialog based on screen dimensions
         widthOfDialog = (int) (widthOfScreen * 0.8);
@@ -166,6 +172,7 @@ public class MatchGame extends AppCompatActivity {
                                         cards.get(finalI).flipImg();
                                         cards.get(previousFlipped[0]).flipImg();
                                         isInteractionEnabled[0] = true;
+                                        hintText.setText("");
                                     }
                                 }, 1400); // Delay in milliseconds
                             }
@@ -199,7 +206,7 @@ public class MatchGame extends AppCompatActivity {
                         fullscreenTextView.setTextSize(textSize);
 
                         // Display the current card's image
-                        fullscreenImageView.setImageResource(cards.get(finalI).getImgResource());
+                        Glide.with(MatchGame.this).load(cards.get(finalI).getImgResource()).into(fullscreenImageView); // ImageView of the card
                         mDialog.show();
                     }
                     // Check for game completion
@@ -218,7 +225,7 @@ public class MatchGame extends AppCompatActivity {
     private List<Card> createCards() {
         Random random = new Random();
 
-        // Array of images for the cards (sample images as gallery is incomplete)
+        // Array of sample images that are used if user does not have enough images in their gallery
         int[] images = {
                 R.drawable.sample_image01,
                 R.drawable.sample_image02,
@@ -227,14 +234,8 @@ public class MatchGame extends AppCompatActivity {
                 R.drawable.sample_image05,
                 R.drawable.sample_image06,
                 R.drawable.sample_image07,
-                R.drawable.sample_image01,
-                R.drawable.sample_image02,
-                R.drawable.sample_image03,
-                R.drawable.sample_image04,
-                R.drawable.sample_image05,
-                R.drawable.sample_image06,
-                R.drawable.sample_image07,
         };
+
 
         //Create an array of noOfCard Cards with null objects
         List<Card> cards = new ArrayList<>(Collections.nCopies(noOfCards, null));
@@ -261,8 +262,8 @@ public class MatchGame extends AppCompatActivity {
             ImageView cardImgView2 = createCardImgView(i * 2 + 1);
 
             // Create two Card objects for matching pair of cards
-            Card card1 = new Card(randomLoc1, randomLoc2, cardImgView1, images[i],false, false);
-            Card card2 = new Card(randomLoc2, randomLoc1, cardImgView2, images[i], false, false);
+            Card card1 = new Card(randomLoc1, randomLoc2, cardImgView1, imageUrls.get(i),false, false, this);
+            Card card2 = new Card(randomLoc2, randomLoc1, cardImgView2, imageUrls.get(i), false, false, this);
 
             // Adds the card into it's random location as the index of the cards list
             cards.set(randomLoc1, card1);
@@ -277,7 +278,7 @@ public class MatchGame extends AppCompatActivity {
         GridLayout gameBoard = findViewById(R.id.match_board);
         gameBoard.setRowCount(noOfCardsY);
         gameBoard.setColumnCount(noOfCardsX);
-        gameBoard.getLayoutParams().height = (int)(heightOfScreen * 0.8) + padding;
+        gameBoard.getLayoutParams().height = (int)(heightOfScreen * 0.85) + padding;
         gameBoard.getLayoutParams().width = (int)(widthOfScreen * 0.9) + padding;
 
         //Add cards to grid
@@ -310,15 +311,17 @@ public class MatchGame extends AppCompatActivity {
     }
 
     // Gets the game difficulty setting passed by makeIntent method
-    private void extractDifficulty() {
+    private void extractData() {
         Intent i = getIntent();
         difficulty = i.getIntExtra(GAME_DIFFICULTY, 1);
+        imageUrls = i.getStringArrayListExtra(IMAGE_URLS);
     }
 
     // Create custom make intent function to pass difficulty setting from games fragment
-    public static Intent makeIntent(Context context, int difficulty){
+    public static Intent makeIntent(Context context, int difficulty, List<String> imageUrls){
         Intent i = new Intent(context, MatchGame.class);
         i.putExtra(GAME_DIFFICULTY, difficulty);
+        i.putStringArrayListExtra(IMAGE_URLS, (ArrayList<String>) imageUrls);
         return i;
     }
 
