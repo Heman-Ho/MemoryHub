@@ -19,12 +19,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Random;
 
 public class puzzle extends AppCompatActivity implements View.OnTouchListener{
@@ -44,6 +39,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
     //solutionCoords stores all the correct x & y coordinates for each puzzle piece. the coordinates are the top-left of each piece
     private ArrayList<Float> solutionCoords = new ArrayList<>();
     private int difficulty;
+    private String imageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -383,16 +379,18 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         }
         return true;
     }
-    // Gets the game difficulty setting passed by makeIntent method
+    // Gets the game difficulty setting and image url passed by makeIntent method
     private void extractDifficulty() {
         Intent i = getIntent();
         difficulty = i.getIntExtra(GAME_DIFFICULTY, 1);
+        imageUrl = i.getStringExtra("image url id");
     }
 
     // Create custom make intent function to pass difficulty setting from games fragment
-    public static Intent makeIntent(Context context, int difficulty){
+    public static Intent makeIntent(Context context, int difficulty, String imageUrl){
         Intent i = new Intent(context, puzzle.class);
         i.putExtra(GAME_DIFFICULTY, difficulty);
+        i.putExtra("image url id", imageUrl);
         return i;
     }
 }

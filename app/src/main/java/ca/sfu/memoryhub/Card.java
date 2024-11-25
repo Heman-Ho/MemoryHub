@@ -1,6 +1,9 @@
 package ca.sfu.memoryhub;
 
+import android.content.Context;
 import android.widget.ImageView;
+import com.bumptech.glide.Glide;
+
 
 
 /**
@@ -9,22 +12,24 @@ import android.widget.ImageView;
 public class Card {
 
     private int location;
+    private Context context;
     private int matchingLoc;
     private ImageView img;
-    private int imgResource;
+    private String imgResource;
     boolean showCard;
     boolean correct;
 
 
     //Constructor
     public Card(int location, int matchingLoc, ImageView img,
-                int imgResource, boolean showCard, boolean correct) {
+                String imgResource, boolean showCard, boolean correct, Context context) {
         this.location = location;
         this.matchingLoc = matchingLoc;
         this.img = img;
         this.showCard = showCard;
         this.imgResource = imgResource;
         this.correct = correct;
+        this.context = context;
     }
 
     //Getters and Setters
@@ -51,11 +56,11 @@ public class Card {
         this.img = img;
     }
 
-    public int getImgResource() {
+    public String getImgResource() {
         return imgResource;
     }
 
-    public void setImgResource(int imgResource) {
+    public void setImgResource(String imgResource) {
         this.imgResource = imgResource;
     }
 
@@ -92,7 +97,8 @@ public class Card {
         }else{
             //If the back of the card is showing, show the card's image
             this.img.animate().setDuration(300).rotationYBy(90f).start();
-            this.img.setImageResource(this.imgResource);
+            // Puts the imaage resource into the imageView
+            Glide.with(context).load(imgResource).into(img);
             this.img.setRotationY(-90f);
             this.img.animate().setDuration(300).rotationYBy(90f).start();
         }
