@@ -71,12 +71,6 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.puzzle_game), (v, insets) -> {
-//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-//            return insets;
-//        });
-
         setContentView(R.layout.puzzle_game); // sets the puzzle layout
 //        setBackgroundImage();
         Button exitButton = findViewById(R.id.exitButton); // gets the exit button
@@ -101,23 +95,20 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
 
 //        final RelativeLayout layout = findViewById(R.id.puzzle_game_relative_layout);
         final ConstraintLayout l = findViewById(R.id.puzzle_game);
-        ImageView puzzleImage = (ImageView) findViewById(R.id.puzzleImage);
 
-        puzzleImage.post(new Runnable() {
-            @SuppressLint("ClickableViewAccessibility")
 
-        final RelativeLayout layout = findViewById(R.id.layout);
+        final RelativeLayout layout = findViewById(R.id.puzzle_game_relative_layout);
 
-//        ImageView puzzleImage = (ImageView) findViewById(R.id.puzzleImage);
         ImageView puzzleImage = findViewById(R.id.puzzleImage);
-        Glide.with(puzzle.this).load(imageUrl).placeholder(R.drawable.game_icon).error(R.drawable.ic_home_black_24dp).listener(new RequestListener<Drawable>() {
-
+        //this will load the ImageView with a image from the users upload photos
+        Glide.with(puzzle.this).load(imageUrl).placeholder(R.drawable.test2).listener(new RequestListener<Drawable>() {
+            //this function checks if the load failed and sends a message
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 Toast.makeText(puzzle.this, "Failed to load image", Toast.LENGTH_SHORT).show();
                 return false;
             }
-
+            //this function will execute the other commands if and only if the image is correctly loaded into the imageView
             @Override
             public boolean onResourceReady(@NonNull Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                 puzzleImage.post(new Runnable() {
@@ -150,17 +141,9 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                             // incrememnts idNum for the next puzzle piece -> increments by 2 because the solutionCoords stores both x and y of a piece
                             idNum+=2;
                         }
-
-                    // randomly chooses a starting postion for a puzzle piece and sets it
-                    ArrayList<Float> setCoords = getRandomCoords();
-                    piece.setX(setCoords.get(0));
-                    piece.setY(setCoords.get(1));
-                    l.addView(piece);
-                    // incrememnts idNum for the next puzzle piece -> increments by 2 because the solutionCoords stores both x and y of a piece
-                    idNum+=2;
                 }
 
-                    }
+
                 });
                 return false;
 
