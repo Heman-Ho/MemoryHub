@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +18,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,6 +49,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
     private ArrayList<Float> solutionCoords = new ArrayList<>();
     private int difficulty;
     private String imageUrl;
+//    private ImageView puzzleImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,44 +77,53 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         //gets the relative layout used in the .xml
         final RelativeLayout layout = findViewById(R.id.layout);
 
-        ImageView puzzleImage = (ImageView) findViewById(R.id.puzzleImage);
-
-        puzzleImage.post(new Runnable() {
-            @SuppressLint("ClickableViewAccessibility")
+//        ImageView puzzleImage = (ImageView) findViewById(R.id.puzzleImage);
+        ImageView puzzleImage = findViewById(R.id.puzzleImage);
+        Glide.with(puzzle.this).load(imageUrl).placeholder(R.drawable.game_icon).error(R.drawable.ic_home_black_24dp).listener(new RequestListener<Drawable>() {
             @Override
-            public void run() {
-
-
-                puzzlePieces = createPieces();
-
-                // stores the scaled puzzle pieces that are ready to be added to the screen
-                ArrayList<ImageView> piecesToAdd = scalePieces();
-
-                getSoltution(puzzleImage);
-
-                //idNum is used to index the solutionCoords to find the correct coordinates for a puzzle piece
-                int idNum =0;
-                setPieceStartingLocations();
-                //loops through all the puzzle pieces and adds them to the screen
-                for( ImageView piece: piecesToAdd){
-                    //sol stores all the information that is needed for a puzzle piece that other functions use
-                    double[] sol = {solutionCoords.get(idNum), solutionCoords.get(idNum+1), 0.0, totalNumPieces};
-                    //sets sol as a tag to each puzzle piece so each piece has a unique array of information
-                    piece.setTag(sol);
-
-                    //allows users to move the puzzle pieces
-                    piece.setOnTouchListener(puzzle.this);
-
-                    // randomly chooses a starting postion for a puzzle piece and sets it
-                    ArrayList<Float> setCoords = getRandomCoords();
-                    piece.setX(setCoords.get(0));
-                    piece.setY(setCoords.get(1));
-                    layout.addView(piece);
-                    // incrememnts idNum for the next puzzle piece -> increments by 2 because the solutionCoords stores both x and y of a piece
-                    idNum+=2;
-                }
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                Toast.makeText(puzzle.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                return false;
             }
-        });
+
+            @Override
+            public boolean onResourceReady(@NonNull Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                puzzleImage.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        puzzlePieces = createPieces();
+                        // stores the scaled puzzle pieces that are ready to be added to the screen
+                        ArrayList<ImageView> piecesToAdd = scalePieces();
+
+                        getSoltution(puzzleImage);
+
+                        //idNum is used to index the solutionCoords to find the correct coordinates for a puzzle piece
+                        int idNum =0;
+                        setPieceStartingLocations();
+                        //loops through all the puzzle pieces and adds them to the screen
+                        for( ImageView piece: piecesToAdd){
+                            //sol stores all the information that is needed for a puzzle piece that other functions use
+                            double[] sol = {solutionCoords.get(idNum), solutionCoords.get(idNum+1), 0.0, totalNumPieces};
+                            //sets sol as a tag to each puzzle piece so each piece has a unique array of information
+                            piece.setTag(sol);
+
+                            //allows users to move the puzzle pieces
+                            piece.setOnTouchListener(puzzle.this);
+
+                            // randomly chooses a starting postion for a puzzle piece and sets it
+                            ArrayList<Float> setCoords = getRandomCoords();
+                            piece.setX(setCoords.get(0));
+                            piece.setY(setCoords.get(1));
+                            layout.addView(piece);
+                            // incrememnts idNum for the next puzzle piece -> increments by 2 because the solutionCoords stores both x and y of a piece
+                            idNum+=2;
+                        }
+
+                    }
+                });
+                return false;
+            }
+        }).into(puzzleImage);
 
 
     }
@@ -112,14 +131,14 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
     //adds different starting locations for the puzzle pieces
     private void setPieceStartingLocations(){
         puzzlePieceStartingLocations.clear();//done as a pre-caution-> not necessary
-        ImageView imageview = findViewById(R.id.puzzleImage);
-        BitmapDrawable drawable = (BitmapDrawable) imageview.getDrawable();
+        ImageView puzzleImage = findViewById(R.id.puzzleImage);
+        BitmapDrawable drawable = (BitmapDrawable) puzzleImage.getDrawable();
         Bitmap bitmap = (Bitmap) drawable.getBitmap();
 
 
-        int coords[] = new int[2];
+        int[] coords = new int[2];
         //gets the onscreen x and y coordinates (top-left) of the imageView
-       imageview.getLocationOnScreen(coords);
+       puzzleImage.getLocationOnScreen(coords);
        //gap between the puzzle pieces when starting will be 40 px
        int gap = 40;
        //gets the scale that should be used
@@ -128,7 +147,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
        int numOfGaps = puzzleDim-1;
        //calculates the scaled width and hieght of the image
        int scaledImageWidth = (int) (scale * bitmap.getWidth());
-       int puzzleImageViewWidth = imageview.getWidth();
+       int puzzleImageViewWidth = puzzleImage.getWidth();
        //calculates the total difference between the imageView width and image width
        int totalDiff = abs(scaledImageWidth - puzzleImageViewWidth);
        //calculates offset
@@ -143,7 +162,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
        //calculates the actual starting coordinates and adds them to the array
        int xStart = (coords[0]+xOffset)-((gap*(numOfGaps))/2);
        for(int x = 0; x<puzzleDim;x++){
-           int yStart = (coords[1] + imageview.getHeight()) ;
+           int yStart = (coords[1] + puzzleImage.getHeight()) ;
            for(int y = 0; y<puzzleDim; y++){
                puzzlePieceStartingLocations.add((float) xStart);//x coordinate
                puzzlePieceStartingLocations.add((float) yStart);//y coordinate
@@ -247,7 +266,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
     //creates the unscaled puzzle pieces
     protected ArrayList<Bitmap> createPieces(){
         //load the imageView
-        ImageView puzzleImage = (ImageView) findViewById(R.id.puzzleImage);
+        ImageView puzzleImage = findViewById(R.id.puzzleImage);
         puzzlePieces = new ArrayList<>(totalNumPieces);
         BitmapDrawable imageBitmap = (BitmapDrawable) puzzleImage.getDrawable();
         Bitmap bitmap = imageBitmap.getBitmap();
@@ -279,7 +298,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         int puzzlePieceHeight = bitmap.getHeight()/puzzleDim;
         for(int i =0; i< totalNumPieces; i++){
             Bitmap piece = puzzlePieces.get(i);
-            //gets the scale from image matrix and appleis it to create the scaled pieces
+            //gets the scale from image matrix and applies it to create the scaled pieces
             float[] f = new float[9];
             puzzleImage.getImageMatrix().getValues(f);
 
