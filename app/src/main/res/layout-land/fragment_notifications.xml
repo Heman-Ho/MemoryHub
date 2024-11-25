@@ -5,8 +5,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.gamepage.GamePageFragment"
-    style="@style/ScreenBackground">
+    tools:context=".ui.gamepage.GamePageFragment">
 
 
     <ImageView
@@ -30,18 +29,20 @@
         android:id="@+id/btnPuzzleGame"
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         android:background="#00000000"
         android:scaleType="fitXY"
+
         style="@style/PuzzGameChange"
 
         app:layout_constraintDimensionRatio="1:0.5"
-        app:layout_constraintStart_toStartOf="@id/guideline4"
-        app:layout_constraintEnd_toEndOf="@id/guideline5"
+        app:layout_constraintEnd_toEndOf="@id/guidelineH3"
 
+
+        app:layout_constraintStart_toStartOf="@id/guidelineH4"
         app:layout_constraintTop_toTopOf="@id/guideline6"
 
-        tools:ignore="ContentDescription"
-        />
+        tools:ignore="ContentDescription" />
 
     <ImageButton
         android:id="@+id/btnMatchGame"
@@ -51,11 +52,13 @@
         android:scaleType="fitXY"
         style="@style/MemGameChange"
 
-        app:layout_constraintDimensionRatio="1:0.5"
-        app:layout_constraintStart_toStartOf="@id/guideline4"
-        app:layout_constraintEnd_toEndOf="@id/guideline5"
 
-        app:layout_constraintTop_toTopOf="@id/guideline7"
+        app:layout_constraintDimensionRatio="1:0.5"
+        app:layout_constraintEnd_toEndOf="@id/guidelineH3"
+
+        app:layout_constraintStart_toStartOf="@id/guidelineH4"
+
+        app:layout_constraintTop_toTopOf="@id/guidelineH6"
 
         tools:ignore="ContentDescription" />
 
@@ -72,7 +75,8 @@
         app:layout_constraintTop_toTopOf="@id/guidelineBack"
         app:layout_constraintBottom_toBottomOf="@id/guidelineBack2"
         app:layout_constraintStart_toStartOf="@id/guidelineH2"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        />
 
     <TextView
         android:id="@+id/textView3"
@@ -93,23 +97,23 @@
     <TextView
 
         android:id="@+id/text_game"
-        style="@style/TextColor"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fontFamily="sans-serif"
         android:text="@string/title_choose_game"
         android:textAlignment="center"
+        style="@style/TextColor"
         android:textSize="20sp"
         android:textStyle="bold"
 
-        app:layout_constraintBottom_toBottomOf="@id/guidelineBack2"
-        app:layout_constraintDimensionRatio="0.9:0.08"
-        app:layout_constraintEnd_toEndOf="@id/imageView3"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/imageView3"
-
+        app:layout_constraintDimensionRatio="0.9:0.02"
         app:layout_constraintTop_toTopOf="@id/guidelineBack"
-        app:layout_constraintVertical_bias="0.512" />
+        app:layout_constraintBottom_toBottomOf="@id/guidelineBack2"
+        app:layout_constraintStart_toStartOf="@id/guidelineH2"
+        app:layout_constraintEnd_toEndOf="@id/guidelineH1"
+
+        tools:layout_editor_absoluteX="74dp"
+        tools:layout_editor_absoluteY="251dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
@@ -132,8 +136,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none"
-            android:textStyle="bold"
-/>
+            android:textStyle="bold" />
 
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -167,6 +170,21 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.70" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineH3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.616" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineH4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.36" />
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline5"
@@ -217,7 +235,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.37" />
+        app:layout_constraintGuide_percent="0.43" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -250,12 +268,11 @@
         android:id="@+id/nav_view"
         android:layout_width="411dp"
         android:layout_height="wrap_content"
-        style="@style/ScreenBackground"
+        android:background="?android:attr/windowBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu" />
-    <!--android:background="?android:attr/windowBackground" -->
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

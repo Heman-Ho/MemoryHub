@@ -9,4 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="forest_green_custom">#758755</color>
     <color name="light_green_custom">#21825C</color>
+    <color name="darkGrey">#ff424242</color>
+    <color name="lavender">#8692f7</color>
+    <color name="dark">#121212</color>
+    <color name="green">#C8EFD6</color>
 </resources>

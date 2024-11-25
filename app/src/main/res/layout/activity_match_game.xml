@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MatchGame">
+    tools:context=".MatchGame"
+    style="@style/ScreenBackground">
 
 
     <Button
@@ -18,9 +19,10 @@
         tools:layout_editor_absoluteY="39dp" />
 
     <GridLayout
-        android:id="@+id/match_board"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/match_board"
+        style="@style/ScreenBackground"
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:background="#ddd"
