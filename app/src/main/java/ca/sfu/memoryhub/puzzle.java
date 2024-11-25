@@ -3,30 +3,44 @@ package ca.sfu.memoryhub;
 import static java.lang.Math.abs;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
+import android.util.DisplayMetrics;
+
+
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -51,11 +65,20 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
     private String imageUrl;
 //    private ImageView puzzleImage;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.puzzle_game); // sets the puzzle layout
 
+//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.puzzle_game), (v, insets) -> {
+//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+//            return insets;
+//        });
+
+        setContentView(R.layout.puzzle_game); // sets the puzzle layout
+//        setBackgroundImage();
         Button exitButton = findViewById(R.id.exitButton); // gets the exit button
 
         //exits the puzzle game if user clicks on the exit button
@@ -75,11 +98,20 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         totalNumPieces = getPuzzleDim()*getPuzzleDim();
 
         //gets the relative layout used in the .xml
+
+//        final RelativeLayout layout = findViewById(R.id.puzzle_game_relative_layout);
+        final ConstraintLayout l = findViewById(R.id.puzzle_game);
+        ImageView puzzleImage = (ImageView) findViewById(R.id.puzzleImage);
+
+        puzzleImage.post(new Runnable() {
+            @SuppressLint("ClickableViewAccessibility")
+
         final RelativeLayout layout = findViewById(R.id.layout);
 
 //        ImageView puzzleImage = (ImageView) findViewById(R.id.puzzleImage);
         ImageView puzzleImage = findViewById(R.id.puzzleImage);
         Glide.with(puzzle.this).load(imageUrl).placeholder(R.drawable.game_icon).error(R.drawable.ic_home_black_24dp).listener(new RequestListener<Drawable>() {
+
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 Toast.makeText(puzzle.this, "Failed to load image", Toast.LENGTH_SHORT).show();
@@ -119,9 +151,19 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                             idNum+=2;
                         }
 
+                    // randomly chooses a starting postion for a puzzle piece and sets it
+                    ArrayList<Float> setCoords = getRandomCoords();
+                    piece.setX(setCoords.get(0));
+                    piece.setY(setCoords.get(1));
+                    l.addView(piece);
+                    // incrememnts idNum for the next puzzle piece -> increments by 2 because the solutionCoords stores both x and y of a piece
+                    idNum+=2;
+                }
+
                     }
                 });
                 return false;
+
             }
         }).into(puzzleImage);
 
@@ -140,7 +182,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         //gets the onscreen x and y coordinates (top-left) of the imageView
        puzzleImage.getLocationOnScreen(coords);
        //gap between the puzzle pieces when starting will be 40 px
-       int gap = 40;
+       int gap = 80/puzzleDim;
        //gets the scale that should be used
        float scale = getScale();
        //calculates the number of gaps that should exist
@@ -262,6 +304,27 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
             y+= scaledImageHeight/puzzleDim;
         }
     }
+    private void setBackgroundImage(){
+        ImageView puzzleImage = findViewById(R.id.puzzleImage);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        float screenHeight = displayMetrics.heightPixels;
+        float screenWidth = displayMetrics.widthPixels;
+
+//        float heightOffset = (float) ((0.25 * screenHeight)/2);
+        float widthOffset = (float) (((0.5 * screenWidth)));
+        Log.i("SCREEN WIDTH", String.valueOf(widthOffset));
+        float setPuzzleImageWidthHeight = (float) ((0.75*screenWidth));
+
+        ViewGroup.LayoutParams layoutParams = puzzleImage.getLayoutParams();
+        layoutParams.height = (int) setPuzzleImageWidthHeight;
+        layoutParams.width = (int) setPuzzleImageWidthHeight;
+        puzzleImage.setLayoutParams(layoutParams);
+        puzzleImage.setX(widthOffset);
+        Log.i("PUZZLE IMAGE X:", String.valueOf(puzzleImage.getX()));
+    }
+
 
     //creates the unscaled puzzle pieces
     protected ArrayList<Bitmap> createPieces(){
@@ -327,11 +390,12 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         float xDelta = 0;
         float yDelta = 0;
 
+
         double[] sol = (double[]) v.getTag();
         final double setx = sol[0];
         final double sety = sol[1];
         int stop = (int) sol[2];
-
+//        }
         if (stop == 1) {
             return true;
         }
@@ -353,6 +417,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
             case MotionEvent.ACTION_DOWN:
                 xDelta = x - screenCoords[0];
                 yDelta = y - screenCoords[1];
+                Log.i("on touch", String.valueOf(v.getX()) + " & " + String.valueOf(v.getY()));
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -367,14 +432,16 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                 v.getLocationOnScreen(onScreenCoords);
                 double xDiff = abs(sol[0] - onScreenCoords[0]);
                 double yDiff = abs(sol[1] - onScreenCoords[1]);
-                int tolerance = 50;
+                int tolerance = 100/puzzleDim;
                 //checks if piece is within a tolerance
                 if (xDiff <= tolerance && yDiff <= tolerance) {
                     sol[2] = 1; // updates the puzzle pieces information to mark that it is in the correct place and shouldn't be moved again
 
                     //snaps the puzzle piece to the correct location
+                    int statusbarResourceID = puzzle.this.getResources().getIdentifier("status_bar_height", "dimen", "android");;
+                    int statusBarHeight = puzzle.this.getResources().getDimensionPixelSize(statusbarResourceID);
                     v.setX((float) setx);
-                    v.setY((float) sety - 60);
+                    v.setY((float) sety - statusBarHeight);
                     //updates the number of pieces correct
                     numPiecesCorrect++;
 
@@ -385,13 +452,54 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                     // Check if the puzzle is complete
                     if (numPiecesCorrect == totalNumPieces) {
                         Toast.makeText(puzzle.this, "Congrats! You Won the Game!", Toast.LENGTH_SHORT).show();
-                        try {
-                            Thread.sleep(200); // Wait for a moment before moving to next screen
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        Intent i = new Intent(puzzle.this, MainActivity.class);
-                        startActivity(i);
+//                        try {
+//                            Thread.sleep(200); // Wait for a moment before moving to next screen
+//                        } catch (InterruptedException e) {
+//                            throw new RuntimeException(e);
+//                        }
+
+
+//                        Intent i = new Intent(puzzle.this, MainActivity.class);
+//                        startActivity(i);
+//                        ImageView puzzleImag = (ImageView) findViewById(R.id.puzzleImage);
+                        Dialog mDialog;
+                        mDialog = new Dialog(this);
+                        ImageView fullscreenImageView;
+                        TextView fullscreenTextView;
+
+                        int widthOfScreen, heightOfScreen;
+                        DisplayMetrics displayMetrics = new DisplayMetrics();
+                        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                        widthOfScreen = displayMetrics.widthPixels;
+                        heightOfScreen = displayMetrics.heightPixels;
+
+                        int widthOfDialog = (int) (0.8 * widthOfScreen);
+                        int heightOfDialog = (int)(0.8*heightOfScreen);
+                        float textSize = widthOfScreen * 0.02f;
+                        // Card is already faced up, show the image in fullscreen
+//                        ImageView fullscreenImageView = (ImageView) findViewById(R.id.puzzleImage);
+                        mDialog.setContentView(R.layout.fullscreen_image);
+                        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                        fullscreenImageView = mDialog.findViewById(R.id.fullscreenImageView);
+                        fullscreenTextView = mDialog.findViewById(R.id.fullscreenTextView);
+
+                        // Set up parameters for pop up based on screen dimensions
+                        WindowManager.LayoutParams layoutParams = mDialog.getWindow().getAttributes();
+                        layoutParams.width = widthOfDialog; // 0.8 * widthOfScreen
+                        layoutParams.height = heightOfDialog; // 0.8 * widthOfScreen
+                        mDialog.getWindow().setAttributes(layoutParams);
+
+                        // Set up parameters for ImageView and TextView
+                        fullscreenImageView.getLayoutParams().width = widthOfDialog;
+                        fullscreenImageView.getLayoutParams().height = (int)(heightOfDialog * 0.8);
+                        fullscreenTextView.getLayoutParams().width = widthOfDialog;
+                        fullscreenTextView.getLayoutParams().height = (int)(heightOfDialog * 0.2);
+                        fullscreenTextView.setTextSize(textSize);
+                        Drawable drawable = puzzleImage.getDrawable();
+                        // Display the current card's image
+                        fullscreenImageView.setImageDrawable(drawable);
+                        mDialog.show();
                     }
                 }
                 break;
