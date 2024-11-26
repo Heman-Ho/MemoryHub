@@ -58,7 +58,8 @@
 
         style="@style/TextColor"
         android:textAlignment="center"
-        app:layout_constraintDimensionRatio="0.9:0.15"
+        android:gravity="center"
+        app:layout_constraintDimensionRatio="0.9:0.2"
         app:layout_constraintTop_toTopOf="@id/guideline6"
         app:layout_constraintEnd_toEndOf="@id/guideline2"
         app:layout_constraintStart_toStartOf="@id/guideline1" />
@@ -80,7 +81,7 @@
 
         app:layout_constraintVertical_bias="0.918"
         android:textAlignment="center"
-        app:layout_constraintDimensionRatio="0.9:0.15"
+        app:layout_constraintDimensionRatio="0.9:0.2"
         app:layout_constraintStart_toStartOf="@id/guideline1"
         app:layout_constraintEnd_toEndOf="@id/guideline2"
         app:layout_constraintBottom_toBottomOf="@id/guideline6"
