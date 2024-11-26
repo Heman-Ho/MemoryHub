@@ -18,11 +18,12 @@ public class Card {
     private String imgResource;
     boolean showCard;
     boolean correct;
+    String description;
 
 
     //Constructor
     public Card(int location, int matchingLoc, ImageView img,
-                String imgResource, boolean showCard, boolean correct, Context context) {
+                String imgResource, boolean showCard, boolean correct, Context context, String description) {
         this.location = location;
         this.matchingLoc = matchingLoc;
         this.img = img;
@@ -30,6 +31,7 @@ public class Card {
         this.imgResource = imgResource;
         this.correct = correct;
         this.context = context;
+        this.description = description;
     }
 
     //Getters and Setters
@@ -78,6 +80,14 @@ public class Card {
 
     public void setCorrect(boolean correct) {
         this.correct = correct;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     //Methods
