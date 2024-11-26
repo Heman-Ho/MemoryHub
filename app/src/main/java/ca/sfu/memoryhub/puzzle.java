@@ -2,7 +2,6 @@ package ca.sfu.memoryhub;
 
 import static java.lang.Math.abs;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +42,7 @@ import com.bumptech.glide.request.target.Target;
 
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 
 public class puzzle extends AppCompatActivity implements View.OnTouchListener{
@@ -63,7 +63,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
     private ArrayList<Float> solutionCoords = new ArrayList<>();
     private int difficulty;
     private String imageUrl;
-//    private ImageView puzzleImage;
+    private String imageDescription;
 
 
 
@@ -479,6 +479,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                         fullscreenTextView.getLayoutParams().width = widthOfDialog;
                         fullscreenTextView.getLayoutParams().height = (int)(heightOfDialog * 0.2);
                         fullscreenTextView.setTextSize(textSize);
+                        fullscreenTextView.setText(imageDescription);
                         Drawable drawable = puzzleImage.getDrawable();
                         // Display the current card's image
                         fullscreenImageView.setImageDrawable(drawable);
@@ -494,13 +495,16 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
         Intent i = getIntent();
         difficulty = i.getIntExtra(GAME_DIFFICULTY, 1);
         imageUrl = i.getStringExtra("image url id");
+        imageDescription = i.getStringExtra("image description id");
     }
 
     // Create custom make intent function to pass difficulty setting from games fragment
-    public static Intent makeIntent(Context context, int difficulty, String imageUrl){
+    public static Intent makeIntent(Context context, int difficulty, String imageUrl, Map<String, String> puzzleGameUrlToDescription){
         Intent i = new Intent(context, puzzle.class);
         i.putExtra(GAME_DIFFICULTY, difficulty);
         i.putExtra("image url id", imageUrl);
+        String description = puzzleGameUrlToDescription.get(imageUrl);
+        i.putExtra("image description id", description);
         return i;
     }
 }

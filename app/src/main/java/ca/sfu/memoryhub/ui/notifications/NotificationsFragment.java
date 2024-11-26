@@ -1,6 +1,7 @@
 package ca.sfu.memoryhub.ui.notifications;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +16,20 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import ca.sfu.memoryhub.puzzle;
@@ -74,20 +80,24 @@ public class NotificationsFragment extends Fragment {
             autoCompleteTextView.setAdapter(adapterItems);
         });
 
+        // Create maps to keep track of descriptions of images
+        Map<String, String> matchGameUrlToDescription = new HashMap<>();
+        Map<String, String> puzzleGameUrlToDescription = new HashMap<>();
+
         // Retrieve List of 6 ImagesUrls from firebase storage for the match game
         List<String> imageUrls = new ArrayList<>();
-        addGalleryImagesTo(imageUrls, matchGameNumImages);
+        addGalleryImagesTo(imageUrls, matchGameNumImages, matchGameUrlToDescription);
 
         // Retrieve 1 random ImageUrl from firebase storage for puzzle game
         List<String> puzzleImageUrl = new ArrayList<>();
-        addGalleryImagesTo(puzzleImageUrl, 1);
+        addGalleryImagesTo(puzzleImageUrl, 1, puzzleGameUrlToDescription);
 
         //Set up onClickListeners for buttons to access games
         binding.btnPuzzleGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(puzzleImageUrl.size() == 1){
-                    Intent i = puzzle.makeIntent(getContext(), difficulty, puzzleImageUrl.get(0));
+                    Intent i = puzzle.makeIntent(getContext(), difficulty, puzzleImageUrl.get(0), puzzleGameUrlToDescription);
                     startActivity(i);
                 }else{
                     Toast.makeText(getContext(), "Please wait while images are loading", Toast.LENGTH_SHORT).show();
@@ -99,7 +109,7 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(imageUrls.size() == matchGameNumImages){
-                    Intent i = MatchGame.makeIntent(getContext(), difficulty, imageUrls);
+                    Intent i = MatchGame.makeIntent(getContext(), difficulty, imageUrls, matchGameUrlToDescription);
                     startActivity(i);
                 }else{
                     Toast.makeText(getContext(), "Please wait while images are loading", Toast.LENGTH_SHORT).show();
@@ -158,10 +168,12 @@ public class NotificationsFragment extends Fragment {
         return root;
     }
 
-    // Takes a list of strings and adds images from the gallery as urls to the list.
+    // Takes a string list and adds images from the gallery as urls to the list.
     // If there are less than numImages images in the firebase storage, sample images are
     // added to the list instead. A maximum of 6 sample images are provided.
-    private void addGalleryImagesTo(List<String> images, int numImages) {
+    // A map is created using each imageUrl as a key and the value is the corresponding
+    // description that is taken from firebase storage.
+    private void addGalleryImagesTo(List<String> images, int numImages, Map<String, String> map) {
         storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
@@ -178,8 +190,22 @@ public class NotificationsFragment extends Fragment {
             int numPhotosInGallery = items.size();
             // Create the list of image urls
             while(i[0] < numImages && i[0] < numPhotosInGallery){
-                items.get(i[0]).getDownloadUrl().addOnSuccessListener(uri -> {
-                    images.add(uri.toString());
+                // Start both tasks to get the download URL and metadata at the same time
+                Task<Uri> downloadUrlTask = items.get(i[0]).getDownloadUrl();
+                Task<StorageMetadata> metadataTask = items.get(i[0]).getMetadata();
+
+                // Wait until both tasks are completed
+                Tasks.whenAllSuccess(downloadUrlTask, metadataTask).addOnSuccessListener(tasks -> {
+                    Uri uri = (Uri) tasks.get(0);  // Download URL is the first task
+                    StorageMetadata metadata = (StorageMetadata) tasks.get(1);  // Metadata is the second task
+
+                    // Get the image URL and metadata
+                    String imageDownloadUrl = uri.toString();
+                    String description = metadata.getCustomMetadata("description");
+
+                    // Add to images list and map
+                    images.add(imageDownloadUrl);
+                    map.put(imageDownloadUrl, description != null ? description : "No description available");
                 });
                 i[0]++;
             }
@@ -190,11 +216,15 @@ public class NotificationsFragment extends Fragment {
                 List<StorageReference> sampleItems = sampleListResult.getItems();
                 while(i[0] < numImages){
                     sampleItems.get(i[0]).getDownloadUrl().addOnSuccessListener(uri -> {
-                        images.add(uri.toString());
+                        String imageDownloadUrl = uri.toString();
+                        images.add(imageDownloadUrl);
+                        map.put(imageDownloadUrl, "This is a sample image.");
                     });
                     i[0] ++;
                 }
             });
+
+
         });
     }
 
