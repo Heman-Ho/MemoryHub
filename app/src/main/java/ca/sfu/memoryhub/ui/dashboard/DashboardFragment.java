@@ -29,7 +29,6 @@ public class DashboardFragment extends Fragment {
 
     private StorageReference storageReference;
     private Uri imageUri;
-    private MaterialButton selectImageButton;
     private MaterialButton uploadButton;
     private RecyclerView recyclerViewGallery;
     private GalleryAdapter galleryAdapter;
@@ -41,9 +40,9 @@ public class DashboardFragment extends Fragment {
             result -> {
                 if (result.getResultCode() == requireActivity().RESULT_OK && result.getData() != null) {
                     imageUri = result.getData().getData(); // Set the imageUri when an image is picked
-                    Toast.makeText(getContext(), "Image selected!", Toast.LENGTH_SHORT).show();
+                    uploadImage();
                 } else {
-                    Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Couldn't upload image", Toast.LENGTH_SHORT).show();
                 }
             }
     );
@@ -63,7 +62,6 @@ public class DashboardFragment extends Fragment {
         storageReference = FirebaseStorage.getInstance().getReference();
 
         // Initialize views
-        selectImageButton = view.findViewById(R.id.selectImageButton);
         uploadButton = view.findViewById(R.id.uploadButton);
         recyclerViewGallery = view.findViewById(R.id.recyclerViewGallery);
 
@@ -72,20 +70,11 @@ public class DashboardFragment extends Fragment {
         galleryAdapter = new GalleryAdapter(requireContext(), imageUrls);
         recyclerViewGallery.setAdapter(galleryAdapter);
 
-        // Button to select an image
-        selectImageButton.setOnClickListener(v -> {
+        // Button to upload the selected image
+        uploadButton.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             activityResultLauncher.launch(intent);
-        });
-
-        // Button to upload the selected image
-        uploadButton.setOnClickListener(v -> {
-            if (imageUri != null) {
-                uploadImage();
-            } else {
-                Toast.makeText(getContext(), "Please select an image first!", Toast.LENGTH_SHORT).show();
-            }
         });
 
         // Load images uploaded by the current user
