@@ -13,10 +13,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ public class DashboardFragment extends Fragment {
     private RecyclerView recyclerViewGallery;
     private GalleryAdapter galleryAdapter;
     private final List<String> imageUrls = new ArrayList<>();
+    private List<String> imageDescriptions = new ArrayList<>();
 
     // Register activity result launcher to handle image selection
     private final androidx.activity.result.ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
@@ -67,7 +71,7 @@ public class DashboardFragment extends Fragment {
 
         // Set up RecyclerView
         recyclerViewGallery.setLayoutManager(new LinearLayoutManager(requireContext()));
-        galleryAdapter = new GalleryAdapter(requireContext(), imageUrls);
+        galleryAdapter = new GalleryAdapter(requireContext(), imageUrls, imageDescriptions);
         recyclerViewGallery.setAdapter(galleryAdapter);
 
         // Button to upload the selected image
@@ -116,7 +120,22 @@ public class DashboardFragment extends Fragment {
         userImagesRef.listAll()
                 .addOnSuccessListener(listResult -> {
                     for (StorageReference item : listResult.getItems()) {
-                        item.getDownloadUrl().addOnSuccessListener(uri -> {
+
+                        // Get downloadUrl and image's metadata.
+                        Task<Uri> downloadUrlTask = item.getDownloadUrl();
+                        Task<StorageMetadata> metadataTask = item.getMetadata();
+
+                        // Wait until both tasks are completed
+                        Tasks.whenAllSuccess(downloadUrlTask, metadataTask).addOnSuccessListener(tasks -> {
+                            Uri uri = (Uri) tasks.get(0);  // Download URL is the first task
+                            StorageMetadata metadata = (StorageMetadata) tasks.get(1);  // Metadata is the second task
+
+                            // Get the image URL and metadata
+                            String imageDescription = metadata.getCustomMetadata("description");
+                            if(imageDescription == null){
+                                imageDescription = "No description available";
+                            }
+                            imageDescriptions.add(imageDescription);
                             imageUrls.add(uri.toString());
                             galleryAdapter.notifyDataSetChanged();
                         });

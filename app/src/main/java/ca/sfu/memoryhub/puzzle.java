@@ -459,7 +459,6 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
                         int widthOfDialog = (int) (0.8 * widthOfScreen);
                         int heightOfDialog = (int)(0.8*heightOfScreen);
                         float textSize = widthOfScreen * 0.02f;
-                        // Card is already faced up, show the image in fullscreen
 //                        ImageView fullscreenImageView = (ImageView) findViewById(R.id.puzzleImage);
                         mDialog.setContentView(R.layout.fullscreen_image);
                         mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
