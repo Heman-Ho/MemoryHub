@@ -52,11 +52,22 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
+    implementation(libs.annotation.jvm)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    implementation("androidx.annotation:annotation:1.9.1") {
+        var force = true
+    }
+
+
 }
 
 apply(plugin = "com.google.gms.google-services")
+
+
+
