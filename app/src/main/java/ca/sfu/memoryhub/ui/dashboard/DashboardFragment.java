@@ -8,21 +8,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import ca.sfu.memoryhub.R;
@@ -33,12 +31,15 @@ public class DashboardFragment extends Fragment {
     private Uri imageUri;
     private MaterialButton selectImageButton;
     private MaterialButton uploadButton;
+    private RecyclerView recyclerViewGallery;
+    private GalleryAdapter galleryAdapter;
+    private final List<String> imageUrls = new ArrayList<>();
 
     // Register activity result launcher to handle image selection
-    private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
+    private final androidx.activity.result.ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                if (result.getResultCode() == requireActivity().RESULT_OK && result.getData() != null) {
                     imageUri = result.getData().getData(); // Set the imageUri when an image is picked
                     Toast.makeText(getContext(), "Image selected!", Toast.LENGTH_SHORT).show();
                 } else {
@@ -47,43 +48,51 @@ public class DashboardFragment extends Fragment {
             }
     );
 
-    // This is where the fragment view is created
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_dashboard, container, false); // Inflate your fragment layout
+        // Inflate your fragment layout
+        return inflater.inflate(R.layout.fragment_dashboard, container, false);
     }
 
-    // This is where you initialize the views and set up listeners, once the view is created
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Initialize Firebase
         FirebaseApp.initializeApp(requireContext());
         storageReference = FirebaseStorage.getInstance().getReference();
 
-        // Initialize buttons
+        // Initialize views
         selectImageButton = view.findViewById(R.id.selectImageButton);
         uploadButton = view.findViewById(R.id.uploadButton);
+        recyclerViewGallery = view.findViewById(R.id.recyclerViewGallery);
 
-        // Handle image selection button click
+        // Set up RecyclerView
+        recyclerViewGallery.setLayoutManager(new LinearLayoutManager(requireContext()));
+        galleryAdapter = new GalleryAdapter(requireContext(), imageUrls);
+        recyclerViewGallery.setAdapter(galleryAdapter);
+
+        // Button to select an image
         selectImageButton.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
-            activityResultLauncher.launch(intent); // Launch the image picker
+            activityResultLauncher.launch(intent);
         });
 
-        // Handle upload button click
+        // Button to upload the selected image
         uploadButton.setOnClickListener(v -> {
             if (imageUri != null) {
-                uploadImage(); // Upload the selected image
+                uploadImage();
             } else {
                 Toast.makeText(getContext(), "Please select an image first!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Load images uploaded by the current user
+        loadUserImages();
     }
 
-    // Method to upload the image to Firebase Storage
+    // Upload the selected image to Firebase Storage under the current user's UID
     private void uploadImage() {
         if (imageUri == null) {
             Toast.makeText(getContext(), "Please select an image first!", Toast.LENGTH_SHORT).show();
@@ -93,14 +102,39 @@ public class DashboardFragment extends Fragment {
         // Get the current user's UID
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Create a reference for the file in Firebase storage, under the user's UID
+        // Reference for the image in Firebase Storage
         StorageReference ref = storageReference.child("images/" + userId + "/" + UUID.randomUUID().toString());
 
         ref.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> Toast.makeText(getContext(), "Image Uploaded!!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(getContext(), "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+                    // Refresh the gallery to show the newly uploaded image
+                    ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                        imageUrls.add(uri.toString());
+                        galleryAdapter.notifyDataSetChanged();
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    // Load images uploaded by the current user
+    private void loadUserImages() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        StorageReference userImagesRef = storageReference.child("images/" + userId);
+
+        userImagesRef.listAll()
+                .addOnSuccessListener(listResult -> {
+                    for (StorageReference item : listResult.getItems()) {
+                        item.getDownloadUrl().addOnSuccessListener(uri -> {
+                            imageUrls.add(uri.toString());
+                            galleryAdapter.notifyDataSetChanged();
+                        });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Failed to load images: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }
-
-
-
