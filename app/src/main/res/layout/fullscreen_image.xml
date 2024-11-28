@@ -12,7 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="600dp" />
 
-    <TextView
+    <ScrollView
+        android:id="@+id/descriptionScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fullscreenImageView"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp">
+
+        <TextView
         android:id="@+id/fullscreenTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,4 +33,5 @@
         android:text="Description"
         android:textSize="16sp" />
 
+    </ScrollView>
 </RelativeLayout>
