@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.dashboard.DashboardFragment">
+
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="0dp"
@@ -42,6 +43,20 @@
         android:padding="16dp"
         android:gravity="center">
 
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            app:iconifiedByDefault="false"
+            app:searchHintIcon="@null"
+            app:queryHint="Search..."
+            app:closeIcon="@drawable/baseline_cancel_24"
+            app:searchIcon="@drawable/search_icon"/>
+
+
         <!-- Button to select and upload image, now using MaterialButton -->
 
 
@@ -58,7 +73,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_below = "@id/search"/>
     </LinearLayout>
 
     <!--GuideLines-->
