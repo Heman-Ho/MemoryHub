@@ -1,6 +1,9 @@
 package ca.sfu.memoryhub.ui.dashboard;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,8 +25,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
+import android.widget.TextView; // For TextView
+import com.google.android.material.button.MaterialButton; // For MaterialButton
+
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import ca.sfu.memoryhub.R;
@@ -92,24 +100,55 @@ public class DashboardFragment extends Fragment {
             return;
         }
 
+        // Show a dialog for the user to input a description
+        Dialog descriptionDialog = new Dialog(requireContext());
+        descriptionDialog.setContentView(R.layout.dialog_add_description);
+        Objects.requireNonNull(descriptionDialog.getWindow())
+                .setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        TextView descriptionInput = descriptionDialog.findViewById(R.id.descriptionInput);
+        MaterialButton saveButton = descriptionDialog.findViewById(R.id.saveButton);
+        MaterialButton cancelButton = descriptionDialog.findViewById(R.id.cancelButton);
+
+        saveButton.setOnClickListener(v -> {
+                    String description = descriptionInput.getText().toString().trim();
+
+                    if (description.isEmpty()) {
+                        Toast.makeText(getContext(), "Description cannot be empty!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    descriptionDialog.dismiss();
+
         // Get the current user's UID
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         // Reference for the image in Firebase Storage
         StorageReference ref = storageReference.child("images/" + userId + "/" + UUID.randomUUID().toString());
 
-        ref.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    Toast.makeText(getContext(), "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
-                    // Refresh the gallery to show the newly uploaded image
-                    ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                        imageUrls.add(uri.toString());
-                        galleryAdapter.notifyDataSetChanged();
+                    // Create metadata with the description
+                    StorageMetadata metadata = new StorageMetadata.Builder()
+                            .setCustomMetadata("description", description)
+                            .build();
+
+            ref.putFile(imageUri, metadata)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        Toast.makeText(getContext(), "Image uploaded successfully with description!", Toast.LENGTH_SHORT).show();
+                        // Refresh the gallery to show the newly uploaded image
+                        ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                            imageUrls.add(uri.toString());
+                            imageDescriptions.add(description); // Add description to the list
+                            galleryAdapter.notifyDataSetChanged();
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        });
+
+        cancelButton.setOnClickListener(v -> descriptionDialog.dismiss());
+
+        descriptionDialog.show();
     }
 
     // Load images uploaded by the current user
