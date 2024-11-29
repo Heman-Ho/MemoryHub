@@ -74,6 +74,22 @@
         app:layout_constraintStart_toStartOf="@id/guidelineH2"
         tools:ignore="ContentDescription" />
 
+    <ImageView
+        android:id="@+id/imageView10"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:scaleType="fitXY"
+        style="@style/LogoChange"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="@id/guideline2"
+        app:layout_constraintEnd_toEndOf="@id/guidelineH1"
+        app:layout_constraintTop_toTopOf="@id/guideline9"
+
+
+        tools:layout_editor_absoluteY="48dp"
+        tools:ignore="ContentDescription"/>
+
     <TextView
         android:id="@+id/textView3"
         android:layout_width="0dp"
@@ -189,14 +205,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_percent="0.04" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15" />
+        app:layout_constraintGuide_percent="0.168" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineBack"
