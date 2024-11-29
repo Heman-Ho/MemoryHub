@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,10 +25,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-
-import android.widget.TextView; // For TextView
-import com.google.android.material.button.MaterialButton; // For MaterialButton
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,44 +97,43 @@ public class DashboardFragment extends Fragment {
             return;
         }
 
-        // Show a dialog for the user to input a description
-        Dialog descriptionDialog = new Dialog(requireContext());
-        descriptionDialog.setContentView(R.layout.dialog_add_description);
-        Objects.requireNonNull(descriptionDialog.getWindow())
+        // Show a dialog for the user to input a title and description
+        Dialog metadataDialog = new Dialog(requireContext());
+        metadataDialog.setContentView(R.layout.dialog_add_title);
+        Objects.requireNonNull(metadataDialog.getWindow())
                 .setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        TextView descriptionInput = descriptionDialog.findViewById(R.id.descriptionInput);
-        MaterialButton saveButton = descriptionDialog.findViewById(R.id.saveButton);
-        MaterialButton cancelButton = descriptionDialog.findViewById(R.id.cancelButton);
+        TextView titleInput = metadataDialog.findViewById(R.id.titleInput);
+        TextView descriptionInput = metadataDialog.findViewById(R.id.descriptionInput);
+        MaterialButton saveButton = metadataDialog.findViewById(R.id.saveButton);
+        MaterialButton cancelButton = metadataDialog.findViewById(R.id.cancelButton);
 
         saveButton.setOnClickListener(v -> {
-                    String description = descriptionInput.getText().toString().trim();
+            String title = titleInput.getText().toString().trim();
+            String description = descriptionInput.getText().toString().trim();
 
-                    if (description.isEmpty()) {
-                        Toast.makeText(getContext(), "Description cannot be empty!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+            if (title.isEmpty()) {
+                Toast.makeText(getContext(), "Title cannot be empty!", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                    descriptionDialog.dismiss();
+            metadataDialog.dismiss();
 
-        // Get the current user's UID
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            StorageReference ref = storageReference.child("images/" + userId + "/" + UUID.randomUUID().toString());
 
-        // Reference for the image in Firebase Storage
-        StorageReference ref = storageReference.child("images/" + userId + "/" + UUID.randomUUID().toString());
-
-                    // Create metadata with the description
-                    StorageMetadata metadata = new StorageMetadata.Builder()
-                            .setCustomMetadata("description", description)
-                            .build();
+            // Create metadata with the title and description
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setCustomMetadata("title", title)
+                    .setCustomMetadata("description", description)
+                    .build();
 
             ref.putFile(imageUri, metadata)
                     .addOnSuccessListener(taskSnapshot -> {
-                        Toast.makeText(getContext(), "Image uploaded successfully with description!", Toast.LENGTH_SHORT).show();
-                        // Refresh the gallery to show the newly uploaded image
+                        Toast.makeText(getContext(), "Image uploaded successfully with title!", Toast.LENGTH_SHORT).show();
                         ref.getDownloadUrl().addOnSuccessListener(uri -> {
                             imageUrls.add(uri.toString());
-                            imageDescriptions.add(description); // Add description to the list
+                            imageDescriptions.add("Title: " + title + "\nDescription: " + description);
                             galleryAdapter.notifyDataSetChanged();
                         });
                     })
@@ -146,9 +142,9 @@ public class DashboardFragment extends Fragment {
                     });
         });
 
-        cancelButton.setOnClickListener(v -> descriptionDialog.dismiss());
+        cancelButton.setOnClickListener(v -> metadataDialog.dismiss());
 
-        descriptionDialog.show();
+        metadataDialog.show();
     }
 
     // Load images uploaded by the current user
@@ -169,13 +165,24 @@ public class DashboardFragment extends Fragment {
                             Uri uri = (Uri) tasks.get(0);  // Download URL is the first task
                             StorageMetadata metadata = (StorageMetadata) tasks.get(1);  // Metadata is the second task
 
-                            // Get the image URL and metadata
-                            String imageDescription = metadata.getCustomMetadata("description");
-                            if(imageDescription == null){
-                                imageDescription = "No description available";
+                            // Retrieve title and description from metadata
+                            String title = metadata.getCustomMetadata("title");
+                            if (title == null) {
+                                title = "No title available";
                             }
-                            imageDescriptions.add(imageDescription);
+                            String description = metadata.getCustomMetadata("description");
+                            if (description == null) {
+                                description = "No description available";
+                            }
+
+                            // Combine title and description
+                            String combinedMetadata = "Title: " + title + "\nDescription: " + description;
+
+                            // Add data to lists
                             imageUrls.add(uri.toString());
+                            imageDescriptions.add(combinedMetadata);
+
+                            // Notify adapter about data changes
                             galleryAdapter.notifyDataSetChanged();
                         });
                     }
