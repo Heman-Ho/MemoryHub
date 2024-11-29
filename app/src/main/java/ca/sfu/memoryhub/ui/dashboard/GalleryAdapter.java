@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,7 +29,7 @@ import ca.sfu.memoryhub.R;
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
 
     private final Context context;
-    private final List<String> imageUrls;
+    private List<String> imageUrls;
     private final List<String> descriptions;
 
     public GalleryAdapter(Context context, List<String> imageUrls, List<String> descriptions) {
@@ -104,6 +105,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public int getItemCount() {
         return imageUrls.size(); // Return the number of items in the list
     }
+//THEIR VERSION
+//    public void searchDataList(ArrayList<DataClass> searchList){
+//        datalist = searchList;
+//        notifyDataSetChanged();
+//    }
+//    MY VERSION
+    public void searchDataList(ArrayList<String> searchList){
+        imageUrls = searchList;
+        notifyDataSetChanged();
+    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
