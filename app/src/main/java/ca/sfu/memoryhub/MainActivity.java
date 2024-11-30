@@ -2,6 +2,7 @@ package ca.sfu.memoryhub;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -50,7 +51,27 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
+        adjustBottomNavBarHeight(navView);
 
+
+    }
+
+    private void adjustBottomNavBarHeight(BottomNavigationView navView) {
+        // Get screen width
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+
+        // Set Bottom Navigation Bar height based on screen size
+        if (screenWidth < 600) { // Small screen (phones)
+            navView.getLayoutParams().height = 130; // Small height for small screens
+        } else if (screenWidth < 1200) { // Medium screen (tablets)
+            navView.getLayoutParams().height = 170; // Medium height for medium screens
+        } else { // Large screen (large tablets or other devices)
+            navView.getLayoutParams().height = 210; // Larger height for large screens
+        }
+
+        // Apply the layout changes
+        navView.requestLayout();
     }
 
 }
