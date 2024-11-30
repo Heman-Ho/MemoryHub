@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +44,7 @@ public class DashboardFragment extends Fragment {
     private SearchView searchBar;
     private final List<String> imageUrls = new ArrayList<>();
     private List<String> imageDescriptions = new ArrayList<>();
-    private List<String> titles = new ArrayList<>();
+    private List<String> imageTitles = new ArrayList<>();
 
     // Register activity result launcher to handle image selection
     private final androidx.activity.result.ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
@@ -80,7 +78,7 @@ public class DashboardFragment extends Fragment {
 //    MY VERSION
     public void searchList(String text){
         ArrayList<String> searchList = new ArrayList<String>();
-        for(String title : titles){
+        for(String title : imageTitles){
             if(title.toLowerCase().contains(text.toLowerCase())){
                 searchList.add(title);
             }
@@ -174,7 +172,7 @@ public class DashboardFragment extends Fragment {
                         ref.getDownloadUrl().addOnSuccessListener(uri -> {
                             imageUrls.add(uri.toString());
                             imageDescriptions.add("Title: " + title + "\nDescription: " + description);
-                            titles.add(title.toLowerCase());
+                            imageTitles.add(title.toLowerCase());
                             galleryAdapter.notifyDataSetChanged();
                         });
                     })
@@ -222,7 +220,7 @@ public class DashboardFragment extends Fragment {
                             // Add data to lists
                             imageUrls.add(uri.toString());
                             imageDescriptions.add(combinedMetadata);
-                            titles.add(title.toLowerCase());
+                            imageTitles.add(title.toLowerCase());
 
                             // Notify adapter about data changes
                             galleryAdapter.notifyDataSetChanged();
