@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,9 +34,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -51,6 +54,7 @@ public class DashboardFragment extends Fragment {
     private MaterialButton takePhotoButton;
     private RecyclerView recyclerViewGallery;
     private GalleryAdapter galleryAdapter;
+    private SearchView searchBar;
     private final List<String> imageUrls = new ArrayList<>();
     private List<String> imageDescriptions = new ArrayList<>();
     private static final int CAMERA_PERMISSION_CODE = 1;
@@ -102,6 +106,27 @@ public class DashboardFragment extends Fragment {
         // Inflate your fragment layout
         return inflater.inflate(R.layout.fragment_dashboard, container, false);
     }
+//    THEIR VERSION
+//    public void searchList(String text){
+//        ArrayList<DataClass> searchList = new ArrayList<DataClass>();
+//        for(DatClass dataclass : datalist){
+//            if(dataClass.getDataTitle().toLowerCase().contains(text.toLowerCase())){
+//                searchList.add(dataclass);
+//            }
+//        }
+//        galleryAdapter.searchDataList(searchList);
+//    }
+
+//    MY VERSION
+    public void searchList(String text){
+        ArrayList<String> searchList = new ArrayList<String>();
+        for(String url : imageUrls){
+            if(url.toLowerCase().contains(text.toLowerCase())){
+                searchList.add(url);
+            }
+        }
+        galleryAdapter.searchDataList(searchList);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -115,6 +140,21 @@ public class DashboardFragment extends Fragment {
         uploadButton = view.findViewById(R.id.uploadButton);
         takePhotoButton = view.findViewById(R.id.takePhotoButton);
         recyclerViewGallery = view.findViewById(R.id.recyclerViewGallery);
+        searchBar = view.findViewById(R.id.search);
+        searchBar.clearFocus();
+
+        searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchList(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
         // Set up RecyclerView
         recyclerViewGallery.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -239,6 +279,8 @@ public class DashboardFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "Failed to load images: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+
+
     }
 
     // Runs the activityResultLauncer with camera intent
