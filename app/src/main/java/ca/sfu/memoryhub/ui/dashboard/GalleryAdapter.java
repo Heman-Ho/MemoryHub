@@ -116,17 +116,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public int getItemCount() {
         return imageUrls.size(); // Return the number of items in the list
     }
-//THEIR VERSION
-//    public void searchDataList(ArrayList<DataClass> searchList){
-//        datalist = searchList;
-//        notifyDataSetChanged();
-//    }
-//    MY VERSION
-//    public void searchDataList(ArrayList<String> searchList){
-//        imageUrls = searchList;
-//        notifyDataSetChanged();
-//    }
-
     public void searchDataList(ArrayList<String> searchList){//searchList will have a bunch of titles
         List<String> urlsToSearch = new ArrayList<>();
         StorageReference  storageReference = FirebaseStorage.getInstance().getReference();
@@ -149,7 +138,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                             // Retrieve title and description from metadata
                             String title = metadata.getCustomMetadata("title");
 
-
+                            // Checks if the title of the image in what the user is looking for
                             if(searchList.contains(title.toLowerCase())){
                                 urlsToSearch.add(uri.toString());
                                 imageUrls = urlsToSearch;
