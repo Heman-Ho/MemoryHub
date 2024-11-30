@@ -1,7 +1,12 @@
 package ca.sfu.memoryhub.ui.dashboard;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -13,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,30 +33,64 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import android.Manifest;
 import ca.sfu.memoryhub.R;
 
 public class DashboardFragment extends Fragment {
-
     private StorageReference storageReference;
     private Uri imageUri;
     private MaterialButton uploadButton;
+    private MaterialButton takePhotoButton;
     private RecyclerView recyclerViewGallery;
     private GalleryAdapter galleryAdapter;
     private final List<String> imageUrls = new ArrayList<>();
     private List<String> imageDescriptions = new ArrayList<>();
+    private static final int CAMERA_PERMISSION_CODE = 1;
 
     // Register activity result launcher to handle image selection
     private final androidx.activity.result.ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == requireActivity().RESULT_OK && result.getData() != null) {
-                    imageUri = result.getData().getData(); // Set the imageUri when an image is picked
-                    uploadImage();
+                if (result.getResultCode() == requireActivity().RESULT_OK) {
+                    Intent data = result.getData();
+
+                    if (data != null) {
+                        // Handle image picked from gallery
+                        if (data.getData() != null) {
+                            imageUri = data.getData(); // This is the URI from the gallery
+                            uploadImage();
+                        }
+                        // Handle photo taken from camera (change bitmap to URI)
+                        else if (data.getExtras() != null) {
+                            // Retrieve the Bitmap from the Intent
+                            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+
+                            // Create a file in the cache directory
+                            File imageFile = new File(requireContext().getCacheDir(), UUID.randomUUID().toString() + ".jpg");
+
+                            try (FileOutputStream out = new FileOutputStream(imageFile)) {
+                                // Compress the bitmap into the file as a JPEG
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                                out.flush(); // Ensure the data is written to the file
+                            } catch (IOException e) {
+                                Toast.makeText(getContext(), "Error saving image", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            // Create a URI from the saved file
+                            imageUri = Uri.fromFile(imageFile);
+                            uploadImage();
+
+                        }
+                    }
                 } else {
                     Toast.makeText(getContext(), "Couldn't upload image", Toast.LENGTH_SHORT).show();
                 }
@@ -72,6 +113,7 @@ public class DashboardFragment extends Fragment {
 
         // Initialize views
         uploadButton = view.findViewById(R.id.uploadButton);
+        takePhotoButton = view.findViewById(R.id.takePhotoButton);
         recyclerViewGallery = view.findViewById(R.id.recyclerViewGallery);
 
         // Set up RecyclerView
@@ -84,6 +126,13 @@ public class DashboardFragment extends Fragment {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             activityResultLauncher.launch(intent);
+        });
+
+        // Set up the take photo button
+        takePhotoButton = view.findViewById(R.id.takePhotoButton);
+        takePhotoButton.setOnClickListener(v -> {
+            // Open camera to take photo
+            checkAndRequestCameraPermission();
         });
 
         // Load images uploaded by the current user
@@ -191,4 +240,38 @@ public class DashboardFragment extends Fragment {
                     Toast.makeText(getContext(), "Failed to load images: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
+    // Runs the activityResultLauncer with camera intent
+    private void openCamera() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        activityResultLauncher.launch(cameraIntent); // Use the activity result launcher for camera
+    }
+
+    // Checks permission for camera to open and requests for permission if there is no permission
+    private void checkAndRequestCameraPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Request camera permission
+            ActivityCompat.requestPermissions((Activity) requireContext(),
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_CODE);
+        } else {
+            // If permission is granted, open the camera
+            openCamera();
+        }
+    }
+
+    // Overides the onRequestPermissionResult to open camera when permission is granted
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                openCamera();
+            }
+        }
+    }
 }
+
+
+
