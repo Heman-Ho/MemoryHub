@@ -58,14 +58,20 @@
 
 
         <!-- Button to select and upload image, now using MaterialButton -->
-
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/uploadButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Upload Image" />
+
+        <!-- Button to take photo to upload -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/takePhotoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Take Photo" />
 
         <!-- RecyclerView for displaying images -->
         <androidx.recyclerview.widget.RecyclerView
