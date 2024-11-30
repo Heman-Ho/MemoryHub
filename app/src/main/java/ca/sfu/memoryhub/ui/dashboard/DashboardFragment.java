@@ -33,12 +33,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -57,7 +56,8 @@ public class DashboardFragment extends Fragment {
     private SearchView searchBar;
     private final List<String> imageUrls = new ArrayList<>();
     private List<String> imageDescriptions = new ArrayList<>();
-    private static final int CAMERA_PERMISSION_CODE = 1;
+    private List<String> imageTitles = new ArrayList<>();
+   private static final int CAMERA_PERMISSION_CODE = 1;
 
     // Register activity result launcher to handle image selection
     private final androidx.activity.result.ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
@@ -106,23 +106,12 @@ public class DashboardFragment extends Fragment {
         // Inflate your fragment layout
         return inflater.inflate(R.layout.fragment_dashboard, container, false);
     }
-//    THEIR VERSION
-//    public void searchList(String text){
-//        ArrayList<DataClass> searchList = new ArrayList<DataClass>();
-//        for(DatClass dataclass : datalist){
-//            if(dataClass.getDataTitle().toLowerCase().contains(text.toLowerCase())){
-//                searchList.add(dataclass);
-//            }
-//        }
-//        galleryAdapter.searchDataList(searchList);
-//    }
 
-//    MY VERSION
     public void searchList(String text){
         ArrayList<String> searchList = new ArrayList<String>();
-        for(String url : imageUrls){
-            if(url.toLowerCase().contains(text.toLowerCase())){
-                searchList.add(url);
+        for(String title : imageTitles){
+            if(title.toLowerCase().contains(text.toLowerCase())){
+                searchList.add(title);
             }
         }
         galleryAdapter.searchDataList(searchList);
@@ -142,17 +131,16 @@ public class DashboardFragment extends Fragment {
         recyclerViewGallery = view.findViewById(R.id.recyclerViewGallery);
         searchBar = view.findViewById(R.id.search);
         searchBar.clearFocus();
-
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchList(query);
-                return true;
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                searchList(newText);
+                return true;
             }
         });
 
@@ -223,6 +211,7 @@ public class DashboardFragment extends Fragment {
                         ref.getDownloadUrl().addOnSuccessListener(uri -> {
                             imageUrls.add(uri.toString());
                             imageDescriptions.add("Title: " + title + "\nDescription: " + description);
+                            imageTitles.add(title.toLowerCase());
                             galleryAdapter.notifyDataSetChanged();
                         });
                     })
@@ -270,6 +259,7 @@ public class DashboardFragment extends Fragment {
                             // Add data to lists
                             imageUrls.add(uri.toString());
                             imageDescriptions.add(combinedMetadata);
+                            imageTitles.add(title.toLowerCase());
 
                             // Notify adapter about data changes
                             galleryAdapter.notifyDataSetChanged();

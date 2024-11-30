@@ -5,7 +5,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +20,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import ca.sfu.memoryhub.MatchGame;
 import ca.sfu.memoryhub.R;
@@ -30,6 +40,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     private final Context context;
     private List<String> imageUrls;
+    private List<String> imageTitles;
     private final List<String> descriptions;
 
     public GalleryAdapter(Context context, List<String> imageUrls, List<String> descriptions) {
@@ -111,9 +122,42 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 //        notifyDataSetChanged();
 //    }
 //    MY VERSION
-    public void searchDataList(ArrayList<String> searchList){
-        imageUrls = searchList;
-        notifyDataSetChanged();
+//    public void searchDataList(ArrayList<String> searchList){
+//        imageUrls = searchList;
+//        notifyDataSetChanged();
+//    }
+
+    public void searchDataList(ArrayList<String> searchList){//searchList will have a bunch of titles
+        List<String> urlsToSearch = new ArrayList<>();
+        StorageReference  storageReference = FirebaseStorage.getInstance().getReference();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        StorageReference userImagesRef = storageReference.child("images/" + userId);
+
+        userImagesRef.listAll()
+                .addOnSuccessListener(listResult -> {
+                    for (StorageReference item : listResult.getItems()) {
+
+                        // Get downloadUrl and image's metadata.
+                        Task<Uri> downloadUrlTask = item.getDownloadUrl();
+                        Task<StorageMetadata> metadataTask = item.getMetadata();
+
+                        // Wait until both tasks are completed
+                        Tasks.whenAllSuccess(downloadUrlTask, metadataTask).addOnSuccessListener(tasks -> {
+                            Uri uri = (Uri) tasks.get(0);  // Download URL is the first task
+                            StorageMetadata metadata = (StorageMetadata) tasks.get(1);  // Metadata is the second task
+
+                            // Retrieve title and description from metadata
+                            String title = metadata.getCustomMetadata("title");
+
+
+                            if(searchList.contains(title.toLowerCase())){
+                                urlsToSearch.add(uri.toString());
+                                imageUrls = urlsToSearch;
+                                notifyDataSetChanged();
+                            }
+                        });
+                    }
+                });
     }
 
 
