@@ -41,7 +41,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     private final Context context;
     private List<String> imageUrls;
     private List<String> imageTitles;
-    private final List<String> descriptions;
+    private List<String> descriptions;
 
     public GalleryAdapter(Context context, List<String> imageUrls, List<String> descriptions) {
         this.context = context;
@@ -118,6 +118,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     }
     public void searchDataList(ArrayList<String> searchList){//searchList will have a bunch of titles
         List<String> urlsToSearch = new ArrayList<>();
+        List<String> newDescriptions = new ArrayList<>();
         StorageReference  storageReference = FirebaseStorage.getInstance().getReference();
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         StorageReference userImagesRef = storageReference.child("images/" + userId);
@@ -137,11 +138,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
                             // Retrieve title and description from metadata
                             String title = metadata.getCustomMetadata("title");
+                            String description = metadata.getCustomMetadata("description");
 
                             // Checks if the title of the image in what the user is looking for
                             if(searchList.contains(title.toLowerCase())){
                                 urlsToSearch.add(uri.toString());
+                                newDescriptions.add(description);
                                 imageUrls = urlsToSearch;
+                                descriptions = newDescriptions;
+
                                 notifyDataSetChanged();
                             }
                         });

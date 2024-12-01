@@ -163,7 +163,7 @@ public class DashboardFragment extends Fragment {
             checkAndRequestCameraPermission();
         });
 
-        // Load images uploaded by the current user
+        // Load images uploaded by the current user.
         loadUserImages();
     }
 
