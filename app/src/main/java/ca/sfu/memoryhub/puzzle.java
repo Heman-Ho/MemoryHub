@@ -106,7 +106,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
             //this function checks if the load failed and sends a message
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                Toast.makeText(puzzle.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(puzzle.this, getString(R.string.failed_to_load_image), Toast.LENGTH_SHORT).show();
                 return false;
             }
             //this function will execute the other commands if and only if the image is correctly loaded into the imageView
@@ -435,7 +435,7 @@ public class puzzle extends AppCompatActivity implements View.OnTouchListener{
 
                     // Check if the puzzle is complete
                     if (numPiecesCorrect == totalNumPieces) {
-                        Toast.makeText(puzzle.this, "Congrats! You Won the Game!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(puzzle.this, getString(R.string.congrats_you_won_the_game), Toast.LENGTH_SHORT).show();
 //                        try {
 //                            Thread.sleep(200); // Wait for a moment before moving to next screen
 //                        } catch (InterruptedException e) {

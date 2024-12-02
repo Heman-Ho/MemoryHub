@@ -100,7 +100,7 @@ public class NotificationsFragment extends Fragment {
                     Intent i = puzzle.makeIntent(getContext(), difficulty, puzzleImageUrl.get(0), puzzleGameUrlToDescription);
                     startActivity(i);
                 }else{
-                    Toast.makeText(getContext(), "Please wait while images are loading", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.please_wait_while_images_are_loading), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -112,7 +112,7 @@ public class NotificationsFragment extends Fragment {
                     Intent i = MatchGame.makeIntent(getContext(), difficulty, imageUrls, matchGameUrlToDescription);
                     startActivity(i);
                 }else{
-                    Toast.makeText(getContext(), "Please wait while images are loading", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.please_wait_while_images_are_loading), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -131,10 +131,10 @@ public class NotificationsFragment extends Fragment {
                         reference.setValue(0).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
-                                Toast.makeText(getContext(), "Difficulty set to Easy", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.difficulty_set_to_easy), Toast.LENGTH_SHORT).show();
                             } else {
                                 // Handle the error
-                                Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.failed_to_set_difficulty), Toast.LENGTH_SHORT).show();
                             }
                         });
                         break;
@@ -143,10 +143,10 @@ public class NotificationsFragment extends Fragment {
                         reference.setValue(1).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
-                                Toast.makeText(getContext(), "Difficulty set to Medium", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.difficulty_set_to_medium), Toast.LENGTH_SHORT).show();
                             } else {
                                 // Handle the error
-                                Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.failed_to_set_difficulty), Toast.LENGTH_SHORT).show();
                             }
                         });
                         break;
@@ -155,10 +155,10 @@ public class NotificationsFragment extends Fragment {
                         reference.setValue(2).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Successfully updated the difficulty
-                                Toast.makeText(getContext(), "Difficulty set to Hard", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.difficulty_set_to_hard), Toast.LENGTH_SHORT).show();
                             } else {
                                 // Handle the error
-                                Toast.makeText(getContext(), "Failed to set difficulty", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.failed_to_set_difficulty), Toast.LENGTH_SHORT).show();
                             }
                         });
                         break;
@@ -205,7 +205,7 @@ public class NotificationsFragment extends Fragment {
 
                     // Add to images list and map
                     images.add(imageDownloadUrl);
-                    map.put(imageDownloadUrl, description != null ? description : "No description available");
+                    map.put(imageDownloadUrl, description != null ? description : getString(R.string.no_description_available));
                 });
                 i[0]++;
             }
@@ -218,7 +218,7 @@ public class NotificationsFragment extends Fragment {
                     sampleItems.get(i[0]).getDownloadUrl().addOnSuccessListener(uri -> {
                         String imageDownloadUrl = uri.toString();
                         images.add(imageDownloadUrl);
-                        map.put(imageDownloadUrl, "This is a sample image.");
+                        map.put(imageDownloadUrl, getString(R.string.this_is_a_sample_image));
                     });
                     i[0] ++;
                 }

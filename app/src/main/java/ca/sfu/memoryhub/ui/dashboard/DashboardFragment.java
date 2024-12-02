@@ -85,7 +85,7 @@ public class DashboardFragment extends Fragment {
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                                 out.flush(); // Ensure the data is written to the file
                             } catch (IOException e) {
-                                Toast.makeText(getContext(), "Error saving image", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.error_saving_image), Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
@@ -96,7 +96,7 @@ public class DashboardFragment extends Fragment {
                         }
                     }
                 } else {
-                    Toast.makeText(getContext(), "Couldn't upload image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.couldn_t_upload_image), Toast.LENGTH_SHORT).show();
                 }
             }
     );
@@ -170,7 +170,7 @@ public class DashboardFragment extends Fragment {
     // Upload the selected image to Firebase Storage under the current user's UID
     private void uploadImage() {
         if (imageUri == null) {
-            Toast.makeText(getContext(), "Please select an image first!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.please_select_an_image_first), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -190,7 +190,7 @@ public class DashboardFragment extends Fragment {
             String description = descriptionInput.getText().toString().trim();
 
             if (title.isEmpty()) {
-                Toast.makeText(getContext(), "Title cannot be empty!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.title_cannot_be_empty), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -207,16 +207,16 @@ public class DashboardFragment extends Fragment {
 
             ref.putFile(imageUri, metadata)
                     .addOnSuccessListener(taskSnapshot -> {
-                        Toast.makeText(getContext(), "Image uploaded successfully with title!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.image_uploaded_successfully_with_title), Toast.LENGTH_SHORT).show();
                         ref.getDownloadUrl().addOnSuccessListener(uri -> {
                             imageUrls.add(uri.toString());
-                            imageDescriptions.add("Title: " + title + "\nDescription: " + description);
+                            imageDescriptions.add(getString(R.string.title) + title + getString(R.string.description) + description);
                             imageTitles.add(title.toLowerCase());
                             galleryAdapter.notifyDataSetChanged();
                         });
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.upload_failed) + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         });
 
@@ -246,15 +246,15 @@ public class DashboardFragment extends Fragment {
                             // Retrieve title and description from metadata
                             String title = metadata.getCustomMetadata("title");
                             if (title == null) {
-                                title = "No title available";
+                                title = getString(R.string.no_title_available);
                             }
                             String description = metadata.getCustomMetadata("description");
                             if (description == null) {
-                                description = "No description available";
+                                description = getString(R.string.no_description_available);
                             }
 
                             // Combine title and description
-                            String combinedMetadata = "Title: " + title + "\nDescription: " + description;
+                            String combinedMetadata = getString(R.string.title) + title + "\n" + getString(R.string.description) + description;
 
                             // Add data to lists
                             imageUrls.add(uri.toString());
@@ -267,7 +267,7 @@ public class DashboardFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Failed to load images: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.failed_to_load_images) + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
 
 

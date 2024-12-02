@@ -147,8 +147,6 @@ public class MatchGame extends AppCompatActivity {
         for(int i = 0; i < noOfCards; i++){
             int finalI = i;
             cards.get(i).getImg().setOnClickListener(new View.OnClickListener() {
-                // Suppress warning for setting text directly in code
-                @SuppressLint("SetTextI18n")
                 @Override
                 public void onClick(View v) {
                     // Only process if the clicked card is faced down and
@@ -166,11 +164,11 @@ public class MatchGame extends AppCompatActivity {
                                 cards.get(finalI).setCorrect(true);
                                 cards.get(previousFlipped[0]).setCorrect(true);
                                 correctCounter += 2;
-                                hintText.setText("Correct!");
+                                hintText.setText(getString(R.string.correct));
                                 isInteractionEnabled[0] = true;
                             }else{
                                 // Cards don't match, flip them back after a short delay
-                                hintText.setText("Try Again!");
+                                hintText.setText(getString(R.string.try_again));
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -217,7 +215,7 @@ public class MatchGame extends AppCompatActivity {
                     }
                     // Check for game completion
                     if(correctCounter >= noOfCards){
-                        hintText.setText("You Win!");
+                        hintText.setText(getString(R.string.you_win));
                     }
                 }
             });
