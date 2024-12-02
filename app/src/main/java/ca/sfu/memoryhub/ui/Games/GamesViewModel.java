@@ -1,17 +1,16 @@
-package ca.sfu.memoryhub.ui.gamepage;
-
-import android.view.View;
+package ca.sfu.memoryhub.ui.Games;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class GamePageViewModel extends ViewModel {
+public class GamesViewModel extends ViewModel {
+
     private final MutableLiveData<String> mText;
 
-    public GamePageViewModel() {
+    public GamesViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("Welcome to MemoryHub!");
+        mText.setValue("Welcome to the Games section! More Games will be added soon");
     }
 
     public LiveData<String> getText() {

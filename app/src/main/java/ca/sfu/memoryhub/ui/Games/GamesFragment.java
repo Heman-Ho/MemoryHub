@@ -1,4 +1,4 @@
-package ca.sfu.memoryhub.ui.notifications;
+package ca.sfu.memoryhub.ui.Games;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -38,7 +38,7 @@ import ca.sfu.memoryhub.R;
 import ca.sfu.memoryhub.databinding.FragmentNotificationsBinding;
 
 
-public class NotificationsFragment extends Fragment {
+public class GamesFragment extends Fragment {
 
     String[] difficulties = {"Easy", "Medium", "Hard"};
     AutoCompleteTextView autoCompleteTextView;
@@ -53,8 +53,8 @@ public class NotificationsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NotificationsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+        GamesViewModel notificationsViewModel =
+                new ViewModelProvider(this).get(GamesViewModel.class);
 
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();

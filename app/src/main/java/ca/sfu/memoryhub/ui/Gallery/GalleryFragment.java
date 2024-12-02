@@ -1,6 +1,4 @@
-package ca.sfu.memoryhub.ui.dashboard;
-
-import static androidx.core.content.ContentProviderCompat.requireContext;
+package ca.sfu.memoryhub.ui.Gallery;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -36,7 +34,6 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +43,7 @@ import java.util.UUID;
 import android.Manifest;
 import ca.sfu.memoryhub.R;
 
-public class DashboardFragment extends Fragment {
+public class GalleryFragment extends Fragment {
     private StorageReference storageReference;
     private Uri imageUri;
     private MaterialButton uploadButton;

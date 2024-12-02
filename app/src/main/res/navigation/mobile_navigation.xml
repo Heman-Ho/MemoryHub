@@ -13,13 +13,13 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="ca.sfu.memoryhub.ui.dashboard.DashboardFragment"
+        android:name="ca.sfu.memoryhub.ui.Gallery.GalleryFragment"
         android:label="@string/title_gallery"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="ca.sfu.memoryhub.ui.notifications.NotificationsFragment"
+        android:name="ca.sfu.memoryhub.ui.Games.GamesFragment"
         android:label="@string/title_game"
         tools:layout="@layout/fragment_notifications" />
 </navigation>
