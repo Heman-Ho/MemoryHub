@@ -62,9 +62,9 @@ public class Register extends AppCompatActivity{
                 String strUsername = edtUsername.getText().toString();
 
                 if(strEmail.isEmpty() || strPassword.isEmpty() || strUsername.isEmpty()){
-                    Toast.makeText(Register.this, "All fields are required", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, getString(R.string.all_fields_are_required), Toast.LENGTH_SHORT).show();
                 }else if (strPassword.length() < 6){
-                    Toast.makeText(Register.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, getString(R.string.password_must_be_at_least_6_characters), Toast.LENGTH_SHORT).show();
                 }
                 else{
                     createUser(strEmail, strPassword, strUsername);
@@ -81,13 +81,13 @@ public class Register extends AppCompatActivity{
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Toast.makeText(Register.this, "Account successfully created.",
+                            Toast.makeText(Register.this, getString(R.string.account_successfully_created),
                                     Toast.LENGTH_LONG).show();
                             String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
                             saveUserData(username, uid);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(Register.this, "Authentication failed.",
+                            Toast.makeText(Register.this, getString(R.string.authentication_failed),
                                     Toast.LENGTH_LONG).show();
                         }
                     }
@@ -107,9 +107,9 @@ public class Register extends AppCompatActivity{
                     edtUsername.setText("");
                     edtUsernameReg.setText("");
                     edtPasswordReg.setText("");
-                    Toast.makeText(Register.this, "User data saved successfully.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, getString(R.string.user_data_saved_successfully), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(Register.this, "Failed to save user data.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, getString(R.string.failed_to_save_user_data), Toast.LENGTH_SHORT).show();
                 }
             }
         });

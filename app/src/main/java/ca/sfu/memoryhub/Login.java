@@ -72,7 +72,7 @@ public class Login extends AppCompatActivity{
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     // If sign in is successful, display message
-                                    Toast.makeText(Login.this, "Authentication Successful.",
+                                    Toast.makeText(Login.this, getString(R.string.authentication_successful),
                                             Toast.LENGTH_SHORT).show();
                                     Intent i = new Intent(Login.this, MainActivity.class);
                                     startActivity(i);
@@ -80,7 +80,7 @@ public class Login extends AppCompatActivity{
 
                                 } else {
                                     // If sign in fails, display a message to the user.
-                                    Toast.makeText(Login.this, "Authentication failed.",
+                                    Toast.makeText(Login.this, getString(R.string.authentication_failed),
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }

@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Upload Image" />
+            android:text="@string/upload_image" />
 
         <!-- Button to take photo to upload -->
         <com.google.android.material.button.MaterialButton
@@ -71,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Take Photo" />
+            android:text="@string/take_photo" />
 
         <!-- RecyclerView for displaying images -->
         <androidx.recyclerview.widget.RecyclerView

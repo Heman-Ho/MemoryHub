@@ -29,7 +29,7 @@
         android:layout_width="130dp"
         android:layout_height="65dp"
         android:background="@drawable/rounded_button_background"
-        android:text="Log in"
+        android:text="@string/log_in"
 
         android:textAllCaps="false"
         android:textSize="20sp"
@@ -60,7 +60,7 @@
         android:layout_width="130dp"
         android:layout_height="65dp"
         android:background="@drawable/rounded_button_background"
-        android:text="Register"
+        android:text="@string/register"
         android:textAllCaps="false"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -77,7 +77,7 @@
 
         android:gravity="center"
 
-        android:text="The First Reminiscence Therapy \nExperience"
+        android:text="@string/the_first_reminiscence_therapy_nexperience"
         style="@style/TextColor"
 
         app:layout_constraintDimensionRatio="3:0.4"
