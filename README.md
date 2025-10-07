@@ -3,6 +3,7 @@
 MemoryHub is an Android application designed to support people with dementia (PWD) through reminiscence therapy.  
 It features interactive memory-based games, such as a **matching game**, that use **personal images** to stimulate engagement and recall.
 
+# Watch the Demo here:
 [![Watch the demo](https://img.youtube.com/vi/gTWHod5TDxE/0.jpg)](https://youtu.be/gTWHod5TDxE)
 
 ---
