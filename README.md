@@ -41,7 +41,7 @@ cd memory-hub
 ### 4. Generate and add google-services.json
 - Download the google-services.json file from the Firebase setup page.
 - Place it inside the project at app/google-services.json
-- Make sure to sync gradle files (there is a button to sync on Android Studio).
+- Make sure to sync gradle files (Run Ctrl+Shift+O, or there is a button to sync on Android Studio).
 
 ### 5. Enable Firebase Services
 - Go to the Firebase Console → Build section, and enable:
